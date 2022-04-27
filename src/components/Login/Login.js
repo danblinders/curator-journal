@@ -1,13 +1,19 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-
-const Login = () => {
+const Login = ({changeLoginInfo}) => {
   const [login, setLogin] = useState(''),
         [password, setPassword] = useState('');
+
+  const navigate = useNavigate();
+
   const sendLoginCredentials = () => {
     axios.post('http://localhost:3001/login', {login, password}).then(response => {
-      console.log(response.data);
+      if(response.data[0]) {
+        changeLoginInfo(response.data[0]);
+        navigate('/');
+      }
     });
   }
   
