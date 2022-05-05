@@ -10,13 +10,13 @@ import AdminDashboardIndex from '../AdminDashboardIndex/AdminDashboardIndex';
 import AdminDashboardEvents from '../AdminDashboardEvents/AdminDashboardEvents';
 import AdminDashboardStudents from '../AdminDashboardStudents/AdminDashboardStudents';
 import AdminDashboardCurators from '../AdminDashboardCurators/AdminDashboardCurators';
-
 import UserDashboard from '../UserDashboard/UserDashboard';
 import UserDashboardIndex from '../UserDashboardIndex/UserDashboardIndex';
 import UserDashboardEvents from '../UserDashboardEvents/UserDashboardEvents';
 import UserDashboardStudents from '../UserDashboardStudents/UserDashboardStudents';
 import UserDashboardManagement from '../UserDashboardManagement/UserDashboardManagement';
 import UserDashboardReports from '../UserDashboardReports/UserDashboardReports';
+import StudentManagementDetails from '../StudentManagementDetails/StudentManagementDetails';
 
 function App() {
   // console.dir(sessionStorage.getItem('user'));
@@ -37,6 +37,7 @@ function App() {
                 <Route index element={<UserDashboardIndex/>}/>
                 <Route path="students" element={<UserDashboardStudents/>}/>
                 <Route path="management" element={<UserDashboardManagement/>}/>
+                <Route path="management/:id" element={<StudentManagementDetails/>}/>
                 <Route path="events" element={<UserDashboardEvents/>}/>
                 <Route path="reports" element={<UserDashboardReports/>}/>
               </Route>

@@ -19,7 +19,7 @@ const UserDashboard = () => {
         </div>
         <div className="navbar__item">
           <NavLink activeclassname="navbar__link_active" to="management">
-            Успеваемость и Посещаемость
+            Успеваемость и посещаемость
           </NavLink>
         </div>
         <div className="navbar__item">
