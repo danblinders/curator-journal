@@ -41,23 +41,17 @@ const AddEventForm = ({updateEvents}) => {
         [eventStart, setEventStart] = useState(''),
         [eventEnd, setEventEnd] = useState('');
 
-  const convertImageFileToObj = (fileObj) => {
-    const imageObj = {};
-
-    for (const key in fileObj) {
-      const value = fileObj[key];
-      const notFunction = typeof value !== "function";
-      notFunction && (imageObj[key] = value);
-    }
-
-    setEventThumb(imageObj);
-  }
-
   const addEvent = (e) => {
     e.preventDefault();
-    axios.post('http://localhost:3001/add-event', 
-              {event_name: eventName, description: eventDescr, thumbnail: JSON.stringify(eventThumb), start_date: eventStart, end_date: eventEnd}
-    ).then(() => {
+    const formData = new FormData();
+    formData.append("event_name", eventName);
+    formData.append("description", eventDescr);
+    formData.append("thumbnail", eventThumb);
+    formData.append("start_date", eventStart);
+    formData.append("end_date", eventEnd);
+
+    axios.post('http://localhost:3001/add-event', formData)
+    .then(() => {
       updateEvents([]);
     });
   }
@@ -76,7 +70,7 @@ const AddEventForm = ({updateEvents}) => {
         </label>
         <label className="form__field">
           <span className="form__label">Изображение:</span>
-          <input className="form__input" type="file" name="thumb" onChange={(e) => convertImageFileToObj(e.target.files[0])} required />
+          <input className="form__input" type="file" name="thumb" onChange={(e) => setEventThumb(e.target.files[0])} required />
         </label>
         <label className="form__field">
           <span className="form__label">Дата начала мероприятия:</span>
