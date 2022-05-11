@@ -1,15 +1,16 @@
-import { useState, useEffect,useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import InputMask from 'react-input-mask';
 import StudentsList from '../StudentsList/StudentsList';
-import Modal from '../Modal/Modal';
 import axios from 'axios';
 
 const AdminDashboardStudents = () => {
   const [students, setStudents] = useState([]);
   const [groups, setGroups] = useState([]);
-
+  const [showForm, setShowForm] = useState(false);
+  const closeForm = () => setShowForm(false);
+  const [modal, setModal] = useState({showState: false, message: ''})
   const studentsString = useMemo(() => JSON.stringify(students), [students]);
   const groupsString = useMemo(() => JSON.stringify(groups), [groups]);
 
@@ -34,20 +35,24 @@ const AdminDashboardStudents = () => {
     });
   }
 
-
   return (
     <>
-      <div className="events-list-wrapper">
+      <div className={`modal ${modal.showState ? 'modal_opened' : null}`}>
+        <div className={`modal__container ${modal.showState ? 'modal__container_shown' : null}`}>
+          <div className="modal__close" onClick={() => setModal((state) => ({...state, showState: false}))}>Закрыть</div>
+          <div className="modal__content">{modal.message}</div>
+        </div>
+      </div>
+      <div className="students-list-wrapper">
         <StudentsList studentsToShow={students} deleteRow={deleteStudent} />
       </div>
-      <div className="add-event-block">
-        <AddStudentForm studentsList={students} updateStudents={setStudents} groupsList={groups} />
-      </div>
+      <button className="add-btn" onClick={() => setShowForm(true)}>Добавить студента</button>
+      {showForm && <AddStudentForm showModal={setModal} closeStudentForm={closeForm} groupsList={groups} />}
     </>
   )
 }
 
-const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
+const AddStudentForm = ({showModal, closeStudentForm, groupsList}) => {
   const [groupSearch, setGroupSearch] = useState('');
   const formik_student = useFormik({
     initialValues:{
@@ -59,20 +64,20 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
       address: '',
       email: '',
       phone: '',
-      group: 0,
+      group: groupsList[0].group_id,
       isInDorm: false,
       addInfo: '',
     },
     validationSchema : yup.object(
       {
-        firstName: yup.string().required("Обязательно поле").max(40, 'Значение не должно превышать 40 символов'),
-        secondName: yup.string().max(40, 'Значение не должно превышать 40 символов'),
-        lastName: yup.string().required("Обязательно поле").max(40, 'Значение не должно превышать 40 символов'),
-        birthDate: yup.string().required("Обязательно поле"),
-        address: yup.string().required("Обязательно поле"),
-        email: yup.string().required("Обязательно поле").email("Введен неверный формат email"),
-        phone: yup.string().required("Обязательно поле"),
-        group: yup.string().required("Обязательно поле"),
+        firstName: yup.string().required("Обязательное поле").max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
+        secondName: yup.string().max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
+        lastName: yup.string().required("Обязательное поле").max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
+        birthDate: yup.string().required("Обязательное поле"),
+        address: yup.string().required("Обязательное поле"),
+        email: yup.string().required("Обязательное поле").email("Введен неверный формат email"),
+        phone: yup.string().required("Обязательное поле"),
+        group: yup.string().required("Обязательное поле"),
         addInfo: yup.string().max(1000, 'Текст не должен превышать 1000 символов'),
       }
     ),
@@ -106,7 +111,7 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
           'isParentOneAbsent', 
           {
             is: false,
-            then: yup.string().required("Обязательно поле").max(40, 'Значение не должно превышать 40 символов'),
+            then: yup.string().required("Обязательное поле").max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
             otherwise: yup.string()
           }
         ),
@@ -114,7 +119,7 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
           'isParentOneAbsent', 
           {
             is: false,
-            then: yup.string().required("Обязательно поле").max(40, 'Значение не должно превышать 40 символов'),
+            then: yup.string().required("Обязательное поле").max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
             otherwise: yup.string()
           }
         ),
@@ -122,7 +127,7 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
           'isParentOneAbsent', 
           {
             is: false,
-            then: yup.string().required("Обязательно поле").max(40, 'Значение не должно превышать 40 символов'),
+            then: yup.string().required("Обязательное поле").max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
             otherwise: yup.string()
           }
         ),
@@ -130,7 +135,7 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
           'isParentOneAbsent', 
           {
             is: false,
-            then: yup.string().required("Обязательно поле"),
+            then: yup.string().required("Обязательное поле"),
             otherwise: yup.string()
           }
         ),
@@ -138,7 +143,7 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
           'isParentOneAbsent', 
           {
             is: false,
-            then: yup.string().required("Обязательно поле").email("Введен неверный формат email"),
+            then: yup.string().required("Обязательное поле").email("Введен неверный формат email"),
             otherwise: yup.string()
           }
         ),
@@ -146,7 +151,7 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
           'isParentTwoAbsent', 
           {
             is: false,
-            then: yup.string().required("Обязательно поле").max(40, 'Значение не должно превышать 40 символов'),
+            then: yup.string().required("Обязательное поле").max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
             otherwise: yup.string()
           }
         ),
@@ -154,7 +159,7 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
           'isParentTwoAbsent', 
           {
             is: false,
-            then: yup.string().required("Обязательно поле").max(40, 'Значение не должно превышать 40 символов'),
+            then: yup.string().required("Обязательное поле").max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
             otherwise: yup.string()
           }
         ),
@@ -162,7 +167,7 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
           'isParentTwoAbsent', 
           {
             is: false,
-            then: yup.string().required("Обязательно поле").max(40, 'Значение не должно превышать 40 символов'),
+            then: yup.string().required("Обязательное поле").max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
             otherwise: yup.string()
           }
         ),
@@ -170,7 +175,7 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
           'isParentTwoAbsent', 
           {
             is: false,
-            then: yup.string().required("Обязательно поле"),
+            then: yup.string().required("Обязательное поле"),
             otherwise: yup.string()
           }
         ),
@@ -178,7 +183,7 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
           'isParentTwoAbsent', 
           {
             is: false,
-            then: yup.string().required("Обязательно поле").email("Введен неверный формат email"),
+            then: yup.string().required("Обязательное поле").email("Введен неверный формат email"),
             otherwise: yup.string()
           }
         )
@@ -186,49 +191,54 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
     ),
     validateOnChange: false,
     validateOnBlur: false,
-    onSubmit: () => {
-      console.log(formik_student.values);
-      console.log(formik_parents.values);
-      setStep(3);
+    onSubmit: (e) => {
+      const studentInfoFormData = {
+        first_name: formik_student.values.firstName,
+        second_name: formik_student.values.secondName,
+        last_name: formik_student.values.lastName,
+        birth_date: formik_student.values.birthDate.split('-').reverse().join('-'),
+        address: formik_student.values.address,
+        email: formik_student.values.email,
+        phone: formik_student.values.phone,
+        group_id: formik_student.values.group,
+        is_leader: formik_student.values.isLeader,
+        is_in_dorm: formik_student.values.isInDorm,
+        additional_info: formik_student.values.addInfo,
+      }
+
+      const parentOneFormData = formik_parents.values.isParentOneAbsent ? null : {
+        first_name: formik_parents.values.parentOneFirstName,
+        second_name: formik_parents.values.parentOneSecondName,
+        last_name: formik_parents.values.parentOneLastName,
+        email: formik_parents.values.parentOneEmail,
+        phone: formik_parents.values.parentOnePhone,
+        role: formik_parents.values.parentOneRole
+      }
+
+      const parentTwoFormData = formik_parents.values.isParentTwoAbsent ? null : {
+        first_name: formik_parents.values.parentTwoFirstName,
+        second_name: formik_parents.values.parentTwoSecondName,
+        last_name: formik_parents.values.parentTwoLastName,
+        email: formik_parents.values.parentTwoEmail,
+        phone: formik_parents.values.parentTwoPhone,
+        role: formik_parents.values.parentTwoRole
+      }
+
+      axios.post('http://localhost:3001/add-student', 
+      {student: studentInfoFormData, student_parents: [parentOneFormData, parentTwoFormData]}
+      ).then((response) => {
+        if(response.data.type === 'success') {
+          closeStudentForm();
+          showModal({showState: true, message: 'Новый студент добавлен'})
+        } else {
+          closeStudentForm();
+          showModal({showState: true, message: 'Произошла ошибка'})
+        }
+      });
     }
   });
 
   const [step, setStep] = useState(1);
-  //       [groupSearch, setGroupSearch] = useState(''),
-  //       [isLeader, setIsLeader] = useState(false),
-  //       [firstName, setFirstName] = useState(''),
-  //       [secondName, setSecondName] = useState(''),
-  //       [lastName, setLastName] = useState(''),
-  //       [birthDate, setBirthDate] = useState(''),
-  //       [address, setAddress] = useState(''),
-  //       [email, setEmail] = useState(''),
-  //       [phone, setPhone] = useState(''),
-  //       [group, setGroup] = useState(''),
-  //       [isInDorm, setIsInDorm] = useState(false),
-  //       [addInfo, setAddInfo] = useState(''),
-  //       [parentOneFirstName, setParentOneFirstName] = useState(''),
-  //       [parentOneSecondName, setParentOneSecondName] = useState(''),
-  //       [parentOneLastName, setParentOneLastName] = useState(''),
-  //       [parentOneEmail, setParentOneEmail] = useState(''),
-  //       [parentOnePhone, setParentOnePhone] = useState(''),
-  //       [parentTwoFirstName, setParentTwoFirstName] = useState(''),
-  //       [parentTwoSecondName, setParentTwoSecondName] = useState(''),
-  //       [parentTwoLastName, setParentTwoLastName] = useState(''),
-  //       [parentTwoEmail, setParentTwoEmail] = useState(''),
-  //       [parentTwoPhone, setParentTwoPhone] = useState('');
-
-  const addStudent = (e) => {
-    e.preventDefault();
-    // console.log(formik_student.values);
-    // console.log(formik_parents.values);
-    // setStep(3);
-    // axios.post('http://localhost:3001/add-student', 
-    //           {first_name: firstName, second_name: secondName, last_name: lastName, birth_date: birthDate, address, email, phone,
-    //           is_in_dorm: isInDorm, additional_info: addInfo, group_id: group}
-    // ).then(() => {
-    //   updateStudents(studentsList);
-    // });
-  }
 
   let renderedComponent = null;
 
@@ -296,13 +306,13 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
         </label>
         <label className="form__field">
           <span className="form__label">Группа:</span>
-          <input className="form__input" value={groupsList.filter(item => item.group_id === +formik_student.values.group)[0]?.group_name} onChange={formik_student.handleChange} onBlur={formik_student.handleBlur} name="group" type="text" readOnly/>
+          <input className="form__input" value={groupsList.filter(group => group.group_id === +formik_student.values.group)[0].group_name} onChange={formik_student.handleChange} onBlur={formik_student.handleBlur} name="group" type="text" readOnly/>
           <div className="form__filter">
             <div className="form__filter-search">
               <input type="text" name="group-search" value={groupSearch} onChange={(e) => setGroupSearch(e.target.value)}/>
               <ul className="form__filter-list">
                 {groupsList.filter(group => group.group_name.includes(groupSearch.toUpperCase()))
-                .map(item => <li className="form__filter-item" data-group-filter-id={item.group_id} onClick={(e) => formik_student.setFieldValue('group', e.target.getAttribute('data-group-filter-id'))}>{item.group_name}</li> )}
+                .map(item => <li key={`group-filter-${item.group_id}`} className="form__filter-item" data-group-filter-id={item.group_id} onClick={(e) => formik_student.setFieldValue('group', e.target.getAttribute('data-group-filter-id'))}>{item.group_name}</li> )}
               </ul>
             </div>
           </div>
@@ -317,13 +327,12 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
       </form>
       break;
     case 2:
-      renderedComponent = <form className="add-student__form form" action="#" method="POST" onSubmit={formik_parents.handleSubmit}>
+      renderedComponent = <form className="add-parent__form form" action="#" method="POST" onSubmit={formik_parents.handleSubmit}>
         <h3 className="form__subtitle">Представители студента</h3>
         <div className="form__left">
           <label className="form__field">
             <input className="form__input" onChange={formik_parents.handleChange} name="isParentOneAbsent" type="checkbox" checked={formik_parents.values.isParentOneAbsent ? true : false}/>
             <span className="form__label">Отсутствует</span>
-            {console.log(formik_parents.values.isParentOneAbsent)}
           </label>
           <label className="form__field">
             <span className="form__label">Имя первого представителя:</span>
@@ -359,11 +368,11 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
             {formik_parents.errors.parentOneEmail && <span className="form__error">{formik_parents.errors.parentOneEmail}</span> }
           </label>
           <label className="form__field-check">
-            <input className="form__input" onChange={formik_parents.getFieldProps("parentOneRole").onChange} value="родитель" name="parentOneRole" type="radio"/>
+            <input className="form__input" onChange={formik_parents.getFieldProps("parentOneRole").onChange} value="родитель" name="parentOneRole" type="radio" checked={formik_parents.values.parentOneRole === "родитель" ? true : false}/>
             <span className="form__label">Родитель</span>
           </label>
           <label className="form__field-check">
-            <input className="form__input" onChange={formik_parents.getFieldProps("parentOneRole").onChange}  name="parentOneRole" value="опекун" type="radio" />
+            <input className="form__input" onChange={formik_parents.getFieldProps("parentOneRole").onChange}  name="parentOneRole" value="опекун" type="radio" checked={formik_parents.values.parentOneRole === "опекун" ? true : false} />
             <span className="form__label">Опекун</span>
           </label>
         </div>
@@ -372,7 +381,6 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
           <label className="form__field">
             <input className="form__input" onChange={formik_parents.handleChange} name="isParentTwoAbsent" type="checkbox" checked={formik_parents.values.isParentTwoAbsent ? true : false}/>
             <span className="form__label">Отсутствует</span>
-            {console.log(formik_parents.values.isParentTwoAbsent)}
           </label>
           <label className="form__field">
             <span className="form__label">Имя второго представителя:</span>
@@ -408,29 +416,31 @@ const AddStudentForm = ({studentsList, updateStudents, groupsList}) => {
             {formik_parents.errors.parentTwoEmail && <span className="form__error">{formik_parents.errors.parentTwoEmail}</span> }
           </label>
           <label className="form__field-check">
-            <input className="form__input" onChange={formik_parents.getFieldProps("parentTwoRole").onChange} value="родитель" name="parentTwoRole" type="radio"/>
+            <input className="form__input" onChange={formik_parents.getFieldProps("parentTwoRole").onChange} value="родитель" name="parentTwoRole" type="radio" checked={formik_parents.values.parentTwoRole === "родитель" ? true : false}/>
             <span className="form__label">Родитель</span>
           </label>
           <label className="form__field-check">
-            <input className="form__input" onChange={formik_parents.getFieldProps("parentTwoRole").onChange}  name="parentTwoRole" value="опекун" type="radio" />
+            <input className="form__input" onChange={formik_parents.getFieldProps("parentTwoRole").onChange}  name="parentTwoRole" value="опекун" type="radio" checked={formik_parents.values.parentTwoRole === "опекун" ? true : false} />
             <span className="form__label">Опекун</span>
           </label>
         </div>
         <button className="form__submit" type="submit">Подтвердить</button>
       </form>
       break;
-    case 3:
-      renderedComponent = (
-        <Modal showState={true} message={'Новый студент добавлен!'}/>
-      );
-      break;
     default:
       renderedComponent = null;
   }
 
   return (
-    <div className="add-student">
+    <div className="add-student-form">
+      <div className="add-student-form__close" onClick={() => {
+        formik_student.resetForm();
+        formik_parents.resetForm();
+        closeStudentForm();
+      }}>Close</div>
+      <div className="add-student-form__content">
         {renderedComponent}
+      </div>
     </div>
   );
 

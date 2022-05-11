@@ -1,27 +1,34 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 
 const StudentManagementDetails = () => {
   const {id} = useParams();
+  const [searchParams] = useSearchParams();
+  const start_date = searchParams.get('start_date');
+  const end_date = searchParams.get('end_date');
 
   const [studentData, setStudentData] = useState(null);
 
+  console.log(studentData);
+  
   useEffect(() => {
-    axios.get('http://localhost:3001/student-stat', {params:{student_id: id}}).then(
+    axios.get('http://localhost:3001/student-stat', {params:{student_id: id, start_date, end_date}}).then(
       response => {
         setStudentData(response.data);
       }
     )
-  }, [id]);
+  }, [id, start_date, end_date]);
 
   const studentSubjectsInfo = studentData?.subjects?.map(subject => {
-    return studentData.stats?.filter(stat => stat.subject_id === subject.subject_id);
+    return studentData.stats?.filter(stat => {
+      return stat.subject_id === subject.subject_id;
+    });
   });
 
   console.log(studentSubjectsInfo);
 
-  const studentSubjectsAverageScore = studentSubjectsInfo?.map(item => item.map(i => +i.mark)).map(item => item?.reduce((sum, score) => sum + score) / item.length);
+  const studentSubjectsAverageScore = studentSubjectsInfo?.map(item => item.map(i => +i.mark)).map(item => item?.reduce((sum, score) => sum + score, 0) / item.length);
   const studentSubjectsTotalMissed = studentSubjectsInfo?.map(item => item?.filter(stat => stat.attendance === 'н' || stat.attendance === 'б').length);
   const studentSubjectsMissedByIllness = studentSubjectsInfo?.map(item => item?.filter(stat => stat.attendance === 'б').length);
 

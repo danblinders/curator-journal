@@ -15,11 +15,10 @@ import UserDashboardIndex from '../UserDashboardIndex/UserDashboardIndex';
 import UserDashboardEvents from '../UserDashboardEvents/UserDashboardEvents';
 import UserDashboardStudents from '../UserDashboardStudents/UserDashboardStudents';
 import UserDashboardManagement from '../UserDashboardManagement/UserDashboardManagement';
-import UserDashboardReports from '../UserDashboardReports/UserDashboardReports';
 import StudentManagementDetails from '../StudentManagementDetails/StudentManagementDetails';
+import EventDetails from '../EventDetails/EventDetails';
 
 function App() {
-  // console.dir(sessionStorage.getItem('user'));
   const [user, setUser] = useState(sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : null);
   return (
     <Router>
@@ -39,7 +38,7 @@ function App() {
                 <Route path="management" element={<UserDashboardManagement/>}/>
                 <Route path="management/:id" element={<StudentManagementDetails/>}/>
                 <Route path="events" element={<UserDashboardEvents/>}/>
-                <Route path="reports" element={<UserDashboardReports/>}/>
+                <Route path="events/:id" element={<EventDetails/>}/>
               </Route>
             </Route>
             <Route path="/login" element={<Login loginUser={setUser} />} />

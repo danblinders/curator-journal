@@ -23,7 +23,6 @@ const EventsList = ({eventsToShow, deleteRow}) => {
         thumbExt = null;
         break;
     }
-    console.log(thumbnail[0]);
 
     const thumbSrc = `data:image/${thumbExt};base64,${thumbnail}`
 

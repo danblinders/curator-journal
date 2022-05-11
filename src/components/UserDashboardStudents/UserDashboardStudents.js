@@ -18,7 +18,7 @@ const UserDashboardStudents = () => {
     const studentItems = students.items.filter(item => item.group_id === group.group_id).map(student => {
       const formattedBirthDate = moment.utc(student.birth_date).format('DD/MM/YYYY');
       return (
-        <tr className="table-row">
+        <tr key={`student-${student.student_id}`} className="table-row">
           <td className="table-cell">{student.first_name}</td>
           <td className="table-cell">{student.second_name}</td>
           <td className="table-cell">{student.last_name}</td>
@@ -32,9 +32,11 @@ const UserDashboardStudents = () => {
       );
     });
     return (
-      <table className="group-table table">
+      <table key={`group-${group.group_id}`} className="group-table table">
         <thead>
-          {group.group_name}
+          <tr>
+            <th>{group.group_name}</th>
+          </tr>
         </thead>
         <tbody>
           {studentItems}
