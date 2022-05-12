@@ -27,11 +27,6 @@ const UserDashboard = () => {
             События
           </NavLink>
         </div>
-        <div className="navbar__item">
-          <NavLink activeclassname="navbar__link_active" to="reports">
-            Отчеты
-          </NavLink>
-        </div>
       </nav>
       <div className="page__content">
         <div className="container">
