@@ -1,0 +1,35 @@
+.info-block {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 3rem;
+
+  &__item {
+    padding: 7rem 3rem;
+    background-color: rgba(1, 70, 190, 0.5);
+    border: 2px solid rgba(1, 70, 190);
+    border-radius: 5px;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    font-weight: 700;
+    &_medium {
+      grid-column: span 6;
+    }
+
+    &_big {
+      grid-column: span 12;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .info-block {
+    &__item {
+      &_medium {
+        grid-column: span 12;
+      }
+    }
+  }
+}

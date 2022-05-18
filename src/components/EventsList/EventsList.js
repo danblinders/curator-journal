@@ -27,14 +27,14 @@ const EventsList = ({eventsToShow, deleteRow}) => {
     const thumbSrc = `data:image/${thumbExt};base64,${thumbnail}`
 
     return (
-      <tr className="event-row" key={`event-${event_id}`}>
-        <td className="event-cell" data-event-id={event_id}>{event_id}</td>
-        <td className="event-cell" data-event-name={event_name}>{event_name}</td>
-        <td className="event-cell" data-event-descr={description}>{description}</td>
-        <td className="event-cell"><img src={thumbSrc ? thumbSrc : null} alt={event_name} /></td>
-        <td className="event-cell" data-event-start={start_date}>{formattedStartDate}</td>
-        <td className="event-cell" data-event-end={end_date}>{formattedEndDate}</td>
-        <td className="event-cell"><button className="btn-delete" onClick={() => deleteRow(event_id)}>Удалить</button></td>
+      <tr className="table__row" key={`event-${event_id}`}>
+        <td className="table__cell" data-event-id={event_id}>{event_id}</td>
+        <td className="table__cell" data-event-name={event_name}>{event_name}</td>
+        <td className="table__cell" data-event-descr={description}>{description}</td>
+        <td className="table__cell"><img src={thumbSrc ? thumbSrc : null} alt={event_name} /></td>
+        <td className="table__cell" data-event-start={start_date}>{formattedStartDate}</td>
+        <td className="table__cell" data-event-end={end_date}>{formattedEndDate}</td>
+        <td className="table__cell"><button className="btn-delete" onClick={() => deleteRow(event_id)}>Удалить</button></td>
       </tr>
     )
   });

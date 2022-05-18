@@ -3,17 +3,22 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import InputMask from 'react-input-mask';
 import CuratorsList from '../CuratorsList/CuratorsList';
+import Loader from '../Loader/Loader';
 import axios from 'axios';
+import { CSSTransition } from 'react-transition-group';
 
 const AdminDashboardCurators = () => {
 
   const [curators, setCurators] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showCuratorForm, setShowCuratorForm] = useState(false);
 
   const curatorsString = JSON.stringify(curators);
 
   const getCurators = () => {
     axios.get('http://localhost:3001/all-curators').then(response => {
       setCurators(response.data);
+      setLoading(false);
     })
   }
 
@@ -27,7 +32,12 @@ const AdminDashboardCurators = () => {
       {table_name: "curators", column_name: "curator_id", column_value: id}
     ).then(() => {
       setCurators(curators.filter(({curator_id}) => curator_id !== id));
+      setLoading(false);
     });
+  }
+
+  if (loading) {
+    return <Loader/>
   }
 
 
@@ -36,14 +46,24 @@ const AdminDashboardCurators = () => {
       <div className="curators-list">
         <CuratorsList curatorsToShow={curators} deleteRow={deleteCurator}/>
       </div>
-      <div className="curators-form">
-        <AddCuratorForm updateCurators={getCurators}/>
-      </div>
+      <button className="add-btn" onClick={() => setShowCuratorForm(true)}>Добавить куратора</button>
+      <CSSTransition
+        in={showCuratorForm}
+        timeout={500}
+        classNames="modal"
+        unmountOnExit
+      >
+        <div className="modal">
+          <div className="modal__wrapper">
+            <AddCuratorForm changeLoading={setLoading} closeForm={() => setShowCuratorForm(false)} updateCurators={getCurators}/>
+          </div>
+        </div>
+      </CSSTransition>
     </>
   )
 }
 
-const AddCuratorForm = ({updateCurators}) => {
+const AddCuratorForm = ({changeLoading, closeForm, updateCurators}) => {
 
   const formik_curator = useFormik({
     initialValues: {
@@ -75,19 +95,20 @@ const AddCuratorForm = ({updateCurators}) => {
       validateOnChange: false,
       validateOnBlur: false,
       onSubmit: () => {
+        changeLoading(true);
         axios.post('http://localhost:3001/add-curator', 
         {first_name: formik_curator.values.firstName, last_name: formik_curator.values.lastName, email: formik_curator.values.email, phone: formik_curator.values.phone, login: formik_curator.values.login, password: formik_curator.values.password}
         ).then(() => {
           formik_curator.resetForm();
           updateCurators();
+          closeForm(false);
         });
       }
   });
 
   return (
-    <div className="add-curator">
       <form action="#" method="POST" className="add-curator__form form" onSubmit={formik_curator.handleSubmit}>
-        {/* {error ? <span className="form__error">{error}</span>: null} */}
+        <div className="modal-close" onClick={() => closeForm()}><i className="fa fa-close"></i></div>
         <label className="form__field">
           <span className="form__label">Имя:</span> 
           <input className="form__input" type="text" name="firstName" value={formik_curator.values.firstName} onChange={formik_curator.handleChange} />
@@ -133,7 +154,6 @@ const AddCuratorForm = ({updateCurators}) => {
         </label>
         <button className="form__submit" type="submit" >Отправить</button>
       </form>
-    </div>
   )
 }
 

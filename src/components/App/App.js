@@ -1,3 +1,4 @@
+import './fontawesome.min.scss';
 import './App.scss';
 import { useState } from 'react';
 import authContext from '../../context';
@@ -25,14 +26,14 @@ function App() {
       <authContext.Provider value={user}>
         <div className="app">
           <Routes>
-            <Route path="/" element={<ProtectedRoute><Dashboard logoutUser={setUser} /></ProtectedRoute>}>
-              <Route path="admin" element={<AdminDashboard/>}>
+            <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}>
+              <Route path="admin" element={<AdminDashboard logoutUser={setUser} />}>
                 <Route index element={<AdminDashboardIndex/>}/>
                 <Route path="students" element={<AdminDashboardStudents/>}/>
                 <Route path="curators" element={<AdminDashboardCurators/>}/>
                 <Route path="events" element={<AdminDashboardEvents/>}/>
               </Route>
-              <Route path="user/:id" element={<UserDashboard/>}>
+              <Route path="user/:id" element={<UserDashboard logoutUser={setUser} />}>
                 <Route index element={<UserDashboardIndex/>}/>
                 <Route path="students" element={<UserDashboardStudents/>}/>
                 <Route path="management" element={<UserDashboardManagement/>}/>

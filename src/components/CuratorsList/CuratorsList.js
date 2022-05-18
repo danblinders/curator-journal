@@ -1,18 +1,11 @@
-
+import { useState } from 'react';
+import {SlideDown} from 'react-slidedown';
+import 'react-slidedown/lib/slidedown.css';
 
 const CuratorsList = ({curatorsToShow = [], deleteRow}) => {
-  const curatorsItems = curatorsToShow.map(({curator_id, first_name, last_name, email, phone, login, password}) => {
+  const curatorsItems = curatorsToShow.map((curator, id) => {
     return (
-      <tr className="table__row" key={`curator-${curator_id}`}>
-        <td className="table__cell" data-curator-id={curator_id}>{curator_id}</td>
-        <td className="table__cell" data-curator-first={first_name}>{first_name}</td>
-        <td className="table__cell" data-curator-last={last_name}>{last_name}</td>
-        <td className="table__cell" data-curator-email={email}>{email}</td>
-        <td className="table__cell" data-curator-phone={phone}>{phone}</td>
-        <td className="table__cell" data-curator-login={login}>{login}</td>
-        <td className="table__cell" data-curator-password={password}>{password}</td>
-        <td className="table__cell"><button className="btn-delete" onClick={() => deleteRow(curator_id)}>Удалить</button></td>
-      </tr>
+      <CuratorsListItem curator={curator} id={id} deleteRow={deleteRow} />
     )
   });
 
@@ -21,12 +14,37 @@ const CuratorsList = ({curatorsToShow = [], deleteRow}) => {
   }
 
   return (
-    <table className="table">
-      <tbody>
-        {curatorsItems}
-      </tbody>
-    </table>
+    <ul className="list">
+      {curatorsItems}
+    </ul>
   )
 }
 
 export default CuratorsList;
+
+const CuratorsListItem = ({curator, id, deleteRow}) => {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const {curator_id, first_name, last_name, email, phone, login, password} = curator;
+
+  return (
+    <li className="list__item">
+      <div className="list__main">
+        <div className="list__main-field">{id + 1}</div>
+        <div className="list__main-field">{first_name} - {last_name}</div>
+        <button className="btn-delete" onClick={() => setShowDropdown((state) => !state)}>{showDropdown ? 'Свернуть' : 'Подробнее'}</button>
+        <button className="btn-delete" onClick={() => deleteRow(curator_id)}>Удалить</button>
+      </div>
+      <SlideDown>
+        {
+          showDropdown &&
+          <div className="list__dropdown">
+            <div className="list__dropdown-item">Email: {email ? email : '-' }</div>
+            <div className="list__dropdown-item">Телефон: {phone ? phone : '-' }</div>
+            <div className="list__dropdown-item">Login: {login}</div>
+            <div className="list__dropdown-item">password: {password}</div>
+          </div>
+        }
+      </SlideDown>
+    </li>
+  );
+};

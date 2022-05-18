@@ -3,28 +3,36 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import InputMask from 'react-input-mask';
 import StudentsList from '../StudentsList/StudentsList';
+import Loader from '../Loader/Loader';
 import axios from 'axios';
+import { CSSTransition } from 'react-transition-group';
+import {SlideDown} from 'react-slidedown';
+import 'react-slidedown/lib/slidedown.css';
 
 const AdminDashboardStudents = () => {
   const [students, setStudents] = useState([]);
   const [groups, setGroups] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const closeForm = () => setShowForm(false);
-  const [modal, setModal] = useState({showState: false, message: ''})
+  const [modal, setModal] = useState({showState: false, message: ''});
   const studentsString = useMemo(() => JSON.stringify(students), [students]);
   const groupsString = useMemo(() => JSON.stringify(groups), [groups]);
 
-  useEffect(() => {
-    axios.get("http://localhost:3001/all-students").then(response => {
-      setStudents(response.data);
-    });
-  }, [studentsString]);
+  const [loading, setLoading] = useState(true);
+
+  const getStudents = () => {
+    Promise.all([axios.get("http://localhost:3001/all-students"), axios.get("http://localhost:3001/all-groups")]).then(
+      responses => {
+        setStudents(responses[0].data);
+        setGroups(responses[1].data);
+        setLoading(false);
+      }
+    )
+  }
 
   useEffect(() => {
-    axios.get("http://localhost:3001/all-groups").then(response => {
-      setGroups(response.data);
-    });
-  }, [groupsString]);
+    getStudents();
+  }, [studentsString, groupsString]);
 
   const deleteStudent = (id) => {
     axios.post(
@@ -35,25 +43,35 @@ const AdminDashboardStudents = () => {
     });
   }
 
+  if (loading) {
+    return <Loader/>
+  }
+
   return (
     <>
-      <div className={`modal ${modal.showState ? 'modal_opened' : null}`}>
-        <div className={`modal__container ${modal.showState ? 'modal__container_shown' : null}`}>
-          <div className="modal__close" onClick={() => setModal((state) => ({...state, showState: false}))}>Закрыть</div>
-          <div className="modal__content">{modal.message}</div>
-        </div>
-      </div>
       <div className="students-list-wrapper">
         <StudentsList studentsToShow={students} deleteRow={deleteStudent} />
       </div>
       <button className="add-btn" onClick={() => setShowForm(true)}>Добавить студента</button>
-      {showForm && <AddStudentForm showModal={setModal} closeStudentForm={closeForm} groupsList={groups} />}
+      <CSSTransition
+      in={showForm}
+      timeout={500}
+      classNames="modal"
+      unmountOnExit
+      >
+        <div className="modal">
+          <div className="modal__wrapper">
+            <AddStudentForm changeLoading={setLoading} showModal={setModal} closeStudentForm={closeForm} groupsList={groups} updateStudents={getStudents} />
+          </div>
+        </div>
+      </CSSTransition>
     </>
   )
 }
 
-const AddStudentForm = ({showModal, closeStudentForm, groupsList}) => {
+const AddStudentForm = ({changeLoading, showModal, closeStudentForm, groupsList, updateStudents}) => {
   const [groupSearch, setGroupSearch] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
   const formik_student = useFormik({
     initialValues:{
       isLeader: false,
@@ -192,6 +210,7 @@ const AddStudentForm = ({showModal, closeStudentForm, groupsList}) => {
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (e) => {
+      changeLoading(true);
       const studentInfoFormData = {
         first_name: formik_student.values.firstName,
         second_name: formik_student.values.secondName,
@@ -229,10 +248,10 @@ const AddStudentForm = ({showModal, closeStudentForm, groupsList}) => {
       ).then((response) => {
         if(response.data.type === 'success') {
           closeStudentForm();
-          showModal({showState: true, message: 'Новый студент добавлен'})
+          updateStudents();
         } else {
           closeStudentForm();
-          showModal({showState: true, message: 'Произошла ошибка'})
+          updateStudents();
         }
       });
     }
@@ -245,6 +264,11 @@ const AddStudentForm = ({showModal, closeStudentForm, groupsList}) => {
   switch(step) {
     case 1:
       renderedComponent = <form className="add-student__form form" action="#" method="POST" onSubmit={formik_student.handleSubmit}>
+      <div className="modal-close" onClick={() => {
+        formik_student.resetForm();
+        formik_parents.resetForm();
+        closeStudentForm();
+      }}><i className="fa fa-close"></i></div>
         <label className="form__field">
           <span className="form__label">Имя:</span>
           <input className="form__input" value={formik_student.values.firstName} onChange={formik_student.handleChange} name="firstName" type="text"/>
@@ -260,64 +284,78 @@ const AddStudentForm = ({showModal, closeStudentForm, groupsList}) => {
           <input className="form__input" value={formik_student.values.lastName} onChange={formik_student.handleChange} name="lastName" type="text"/>
           {formik_student.errors.lastName && <span className="form__error">{formik_student.errors.lastName}</span> }
         </label>
-        <label className="form__field">
-          <span className="form__label">Дата рождения:</span>
-          <InputMask
-            mask="99-99-9999"
-            maskPlaceholder="_"
-            value={formik_student.values.birthDate} 
-            alwaysShowMask={false}
-            onChange={formik_student.handleChange}
-          >
-            {() => <input className="form__input" name="birthDate" placeholder="дд-мм-гггг" type="text"/>}
-          </InputMask>
-          {formik_student.errors.birthDate && <span className="form__error">{formik_student.errors.birthDate}</span> }
-        </label>
-        <label className="form__field">
-          <span className="form__label">Адрес:</span>
-          <input className="form__input" value={formik_student.values.address} onChange={formik_student.handleChange} name="address" type="text"/>
-          {formik_student.errors.address && <span className="form__error">{formik_student.errors.address}</span> }
-        </label>
-        <label className="form__field">
-          <span className="form__label">Телефон:</span>
-          <InputMask
-            mask="+7(999)999-99-99"
-            maskPlaceholder="_"
-            value={formik_student.values.phone} 
-            alwaysShowMask={false}
-            onChange={formik_student.handleChange}
-          >
-            {() => <input className="form__input" name="phone" placeholder="+7(111)111-11-11" type="text"/>}
-          </InputMask>
-          {formik_student.errors.phone && <span className="form__error">{formik_student.errors.phone}</span> }
-        </label>
-        <label className="form__field">
-          <span className="form__label">Email:</span>
-          <input className="form__input" value={formik_student.values.email} onChange={formik_student.handleChange} name="email" type="text"/>
-          {formik_student.errors.email && <span className="form__error">{formik_student.errors.email}</span> }
-        </label>
-        <label className="form__field-check">
-          <span className="form__label">Проживает в общежитии</span>
-          <input className="form__input" onChange={formik_student.handleChange} name="isInDorm" type="checkbox" checked={formik_student.values.isInDorm ? true : false}/>
-        </label>
-        <label className="form__field">
-          <span className="form__label">Староста</span>
-          <input className="form__input" value={formik_student.values.isLeader} onChange={formik_student.handleChange} name="isLeader" type="checkbox" checked={formik_student.values.isLeader ? true : false}/>
-        </label>
-        <label className="form__field">
+        <div className="form__group">
+          <label className="form__field">
+            <span className="form__label">Дата рождения:</span>
+            <InputMask
+              mask="99-99-9999"
+              maskPlaceholder="_"
+              value={formik_student.values.birthDate} 
+              alwaysShowMask={false}
+              onChange={formik_student.handleChange}
+            >
+              {() => <input className="form__input" name="birthDate" placeholder="дд-мм-гггг" type="text"/>}
+            </InputMask>
+            {formik_student.errors.birthDate && <span className="form__error">{formik_student.errors.birthDate}</span> }
+          </label>
+          <label className="form__field">
+            <span className="form__label">Адрес:</span>
+            <input className="form__input" value={formik_student.values.address} onChange={formik_student.handleChange} name="address" type="text"/>
+            {formik_student.errors.address && <span className="form__error">{formik_student.errors.address}</span> }
+          </label>
+        </div>
+        <div className="form__group">
+          <label className="form__field">
+            <span className="form__label">Телефон:</span>
+            <InputMask
+              mask="+7(999)999-99-99"
+              maskPlaceholder="_"
+              value={formik_student.values.phone} 
+              alwaysShowMask={false}
+              onChange={formik_student.handleChange}
+            >
+              {() => <input className="form__input" name="phone" placeholder="+7(111)111-11-11" type="text"/>}
+            </InputMask>
+            {formik_student.errors.phone && <span className="form__error">{formik_student.errors.phone}</span> }
+          </label>
+          <label className="form__field">
+            <span className="form__label">Email:</span>
+            <input className="form__input" value={formik_student.values.email} onChange={formik_student.handleChange} name="email" type="text"/>
+            {formik_student.errors.email && <span className="form__error">{formik_student.errors.email}</span> }
+          </label>
+        </div>
+        <div className="form__group">
+          <label className="form__field-check">
+            <span className="form__label">Проживает в общежитии</span>
+            <input className="form__input" onChange={formik_student.handleChange} name="isInDorm" type="checkbox" checked={formik_student.values.isInDorm ? true : false}/>
+          </label>
+          <label className="form__field">
+            <span className="form__label">Староста</span>
+            <input className="form__input" value={formik_student.values.isLeader} onChange={formik_student.handleChange} name="isLeader" type="checkbox" checked={formik_student.values.isLeader ? true : false}/>
+          </label>
+        </div>
+        <div className="form__field">
           <span className="form__label">Группа:</span>
-          <input className="form__input" value={groupsList.filter(group => group.group_id === +formik_student.values.group)[0].group_name} onChange={formik_student.handleChange} onBlur={formik_student.handleBlur} name="group" type="text" readOnly/>
-          <div className="form__filter">
-            <div className="form__filter-search">
-              <input type="text" name="group-search" value={groupSearch} onChange={(e) => setGroupSearch(e.target.value)}/>
-              <ul className="form__filter-list">
-                {groupsList.filter(group => group.group_name.includes(groupSearch.toUpperCase()))
-                .map(item => <li key={`group-filter-${item.group_id}`} className="form__filter-item" data-group-filter-id={item.group_id} onClick={(e) => formik_student.setFieldValue('group', e.target.getAttribute('data-group-filter-id'))}>{item.group_name}</li> )}
-              </ul>
-            </div>
-          </div>
+          <span className="form__show-box">{groupsList.filter(group => group.group_id === +formik_student.values.group)[0].group_name}</span>
+          <button type="button" className="add-btn" onClick={() => setShowDropdown(state => !state)} >{showDropdown ? 'Свернуть' : 'Выбрать'}</button>
+          <input className="form__input form__input_hidden" value={groupsList.filter(group => group.group_id === +formik_student.values.group)[0].group_name} onChange={formik_student.handleChange} onBlur={formik_student.handleBlur} name="group" type="text" readOnly/>
+          <SlideDown>
+            {
+              showDropdown &&
+              <div className="form__filter">
+                <div className="form__filter-search">
+                  <input type="text" name="group-search" value={groupSearch} onChange={(e) => setGroupSearch(e.target.value)}/>
+                  <ul className="form__filter-list">
+                    {groupsList.filter(group => group.group_name.includes(groupSearch.toUpperCase()))
+                    .map(item => <li key={`group-filter-${item.group_id}`} className="form__filter-item" data-group-filter-id={item.group_id} onClick={(e) => formik_student.setFieldValue('group', e.target.getAttribute('data-group-filter-id'))}>{item.group_name}</li> )}
+                  </ul>
+                </div>
+              </div>
+            }
+          </SlideDown>
+
           {formik_student.errors.group && <span className="form__error">{formik_student.errors.group}</span> }
-        </label>
+        </div>
         <label className="form__field">
           <span className="form__label">Дополнительная информация:</span>
           <input className="form__input" value={formik_student.values.addInfo} onChange={formik_student.handleChange} name="addInfo" type="text"/>
@@ -328,101 +366,108 @@ const AddStudentForm = ({showModal, closeStudentForm, groupsList}) => {
       break;
     case 2:
       renderedComponent = <form className="add-parent__form form" action="#" method="POST" onSubmit={formik_parents.handleSubmit}>
+      <div className="form__close" onClick={() => {
+        formik_student.resetForm();
+        formik_parents.resetForm();
+        closeStudentForm();
+      }}>Close</div>
         <h3 className="form__subtitle">Представители студента</h3>
-        <div className="form__left">
-          <label className="form__field">
-            <input className="form__input" onChange={formik_parents.handleChange} name="isParentOneAbsent" type="checkbox" checked={formik_parents.values.isParentOneAbsent ? true : false}/>
-            <span className="form__label">Отсутствует</span>
-          </label>
-          <label className="form__field">
-            <span className="form__label">Имя первого представителя:</span>
-            <input className="form__input" value={formik_parents.values.parentOneFirstName} onChange={formik_parents.handleChange} name="parentOneFirstName" type="text"/>
-            {formik_parents.errors.parentOneFirstName && <span className="form__error">{formik_parents.errors.parentOneFirstName}</span> }
-          </label>
-          <label className="form__field">
-            <span className="form__label">Отчество первого представителя:</span>
-            <input className="form__input" value={formik_parents.values.parentOneSecondName} onChange={formik_parents.handleChange} name="parentOneSecondName" type="text"/>
-            {formik_parents.errors.parentOneSecondName && <span className="form__error">{formik_parents.errors.parentOneSecondName}</span> }
-          </label>
-          <label className="form__field">
-            <span className="form__label">Фамилия первого представителя:</span>
-            <input className="form__input" value={formik_parents.values.parentOneLastName} onChange={formik_parents.handleChange} name="parentOneLastName" type="text"/>
-            {formik_parents.errors.parentOneLastName && <span className="form__error">{formik_parents.errors.parentOneLastName}</span> }
-          </label>
-          <label className="form__field">
-            <span className="form__label">Телефон первого представителя:</span>
-            <InputMask
-              mask="+7(999)999-99-99"
-              maskPlaceholder="_"
-              value={formik_parents.values.parentOnePhone} 
-              alwaysShowMask={false}
-              onChange={formik_parents.handleChange}
-            >
-              {() => <input className="form__input" name="parentOnePhone" placeholder="+7(111)111-11-11" type="text"/>}
-            </InputMask>
-            {formik_parents.errors.parentOnePhone && <span className="form__error">{formik_parents.errors.parentOnePhone}</span> }
-          </label>
-          <label className="form__field">
-            <span className="form__label">Email первого представителя:</span>
-            <input className="form__input" value={formik_parents.values.parentOneEmail} onChange={formik_parents.handleChange} name="parentOneEmail" type="text"/>
-            {formik_parents.errors.parentOneEmail && <span className="form__error">{formik_parents.errors.parentOneEmail}</span> }
-          </label>
-          <label className="form__field-check">
-            <input className="form__input" onChange={formik_parents.getFieldProps("parentOneRole").onChange} value="родитель" name="parentOneRole" type="radio" checked={formik_parents.values.parentOneRole === "родитель" ? true : false}/>
-            <span className="form__label">Родитель</span>
-          </label>
-          <label className="form__field-check">
-            <input className="form__input" onChange={formik_parents.getFieldProps("parentOneRole").onChange}  name="parentOneRole" value="опекун" type="radio" checked={formik_parents.values.parentOneRole === "опекун" ? true : false} />
-            <span className="form__label">Опекун</span>
-          </label>
-        </div>
+        <div className="form__group">
+          <div className="form__left">
+            <label className="form__field">
+              <input className="form__input" onChange={formik_parents.handleChange} name="isParentOneAbsent" type="checkbox" checked={formik_parents.values.isParentOneAbsent ? true : false}/>
+              <span className="form__label">Отсутствует</span>
+            </label>
+            <label className="form__field">
+              <span className="form__label">Имя первого представителя:</span>
+              <input className="form__input" value={formik_parents.values.parentOneFirstName} onChange={formik_parents.handleChange} name="parentOneFirstName" type="text"/>
+              {formik_parents.errors.parentOneFirstName && <span className="form__error">{formik_parents.errors.parentOneFirstName}</span> }
+            </label>
+            <label className="form__field">
+              <span className="form__label">Отчество первого представителя:</span>
+              <input className="form__input" value={formik_parents.values.parentOneSecondName} onChange={formik_parents.handleChange} name="parentOneSecondName" type="text"/>
+              {formik_parents.errors.parentOneSecondName && <span className="form__error">{formik_parents.errors.parentOneSecondName}</span> }
+            </label>
+            <label className="form__field">
+              <span className="form__label">Фамилия первого представителя:</span>
+              <input className="form__input" value={formik_parents.values.parentOneLastName} onChange={formik_parents.handleChange} name="parentOneLastName" type="text"/>
+              {formik_parents.errors.parentOneLastName && <span className="form__error">{formik_parents.errors.parentOneLastName}</span> }
+            </label>
+            <label className="form__field">
+              <span className="form__label">Телефон первого представителя:</span>
+              <InputMask
+                mask="+7(999)999-99-99"
+                maskPlaceholder="_"
+                value={formik_parents.values.parentOnePhone} 
+                alwaysShowMask={false}
+                onChange={formik_parents.handleChange}
+              >
+                {() => <input className="form__input" name="parentOnePhone" placeholder="+7(111)111-11-11" type="text"/>}
+              </InputMask>
+              {formik_parents.errors.parentOnePhone && <span className="form__error">{formik_parents.errors.parentOnePhone}</span> }
+            </label>
+            <label className="form__field">
+              <span className="form__label">Email первого представителя:</span>
+              <input className="form__input" value={formik_parents.values.parentOneEmail} onChange={formik_parents.handleChange} name="parentOneEmail" type="text"/>
+              {formik_parents.errors.parentOneEmail && <span className="form__error">{formik_parents.errors.parentOneEmail}</span> }
+            </label>
+            <label className="form__field-check">
+              <input className="form__input" onChange={formik_parents.getFieldProps("parentOneRole").onChange} value="родитель" name="parentOneRole" type="radio" checked={formik_parents.values.parentOneRole === "родитель" ? true : false}/>
+              <span className="form__label">Родитель</span>
+            </label>
+            <label className="form__field-check">
+              <input className="form__input" onChange={formik_parents.getFieldProps("parentOneRole").onChange}  name="parentOneRole" value="опекун" type="radio" checked={formik_parents.values.parentOneRole === "опекун" ? true : false} />
+              <span className="form__label">Опекун</span>
+            </label>
+          </div>
 
-        <div className="form__right">
-          <label className="form__field">
-            <input className="form__input" onChange={formik_parents.handleChange} name="isParentTwoAbsent" type="checkbox" checked={formik_parents.values.isParentTwoAbsent ? true : false}/>
-            <span className="form__label">Отсутствует</span>
-          </label>
-          <label className="form__field">
-            <span className="form__label">Имя второго представителя:</span>
-            <input className="form__input" value={formik_parents.values.parentTwoFirstName} onChange={formik_parents.handleChange} name="parentTwoFirstName" type="text"/>
-            {formik_parents.errors.parentTwoFirstName && <span className="form__error">{formik_parents.errors.parentTwoFirstName}</span> }
-          </label>
-          <label className="form__field">
-            <span className="form__label">Отчество второго представителя:</span>
-            <input className="form__input" value={formik_parents.values.parentTwoSecondName} onChange={formik_parents.handleChange} name="parentTwoSecondName" type="text"/>
-            {formik_parents.errors.parentTwoSecondName && <span className="form__error">{formik_parents.errors.parentTwoSecondName}</span> }
-          </label>
-          <label className="form__field">
-            <span className="form__label">Фамилия второго представителя:</span>
-            <input className="form__input" value={formik_parents.values.parentTwoLastName} onChange={formik_parents.handleChange} name="parentTwoLastName" type="text"/>
-            {formik_parents.errors.parentTwoLastName && <span className="form__error">{formik_parents.errors.parentTwoLastName}</span> }
-          </label>
-          <label className="form__field">
-            <span className="form__label">Телефон второго представителя:</span>
-            <InputMask
-              mask="+7(999)999-99-99"
-              maskPlaceholder="_"
-              value={formik_parents.values.parentTwoPhone} 
-              alwaysShowMask={false}
-              onChange={formik_parents.handleChange}
-            >
-              {() => <input className="form__input" name="parentTwoPhone" placeholder="+7(111)111-11-11" type="text"/>}
-            </InputMask>
-            {formik_parents.errors.parentTwoPhone && <span className="form__error">{formik_parents.errors.parentTwoPhone}</span> }
-          </label>
-          <label className="form__field">
-            <span className="form__label">Email второго представителя:</span>
-            <input className="form__input" value={formik_parents.values.parentTwoEmail} onChange={formik_parents.handleChange} name="parentTwoEmail" type="text"/>
-            {formik_parents.errors.parentTwoEmail && <span className="form__error">{formik_parents.errors.parentTwoEmail}</span> }
-          </label>
-          <label className="form__field-check">
-            <input className="form__input" onChange={formik_parents.getFieldProps("parentTwoRole").onChange} value="родитель" name="parentTwoRole" type="radio" checked={formik_parents.values.parentTwoRole === "родитель" ? true : false}/>
-            <span className="form__label">Родитель</span>
-          </label>
-          <label className="form__field-check">
-            <input className="form__input" onChange={formik_parents.getFieldProps("parentTwoRole").onChange}  name="parentTwoRole" value="опекун" type="radio" checked={formik_parents.values.parentTwoRole === "опекун" ? true : false} />
-            <span className="form__label">Опекун</span>
-          </label>
+          <div className="form__right">
+            <label className="form__field">
+              <input className="form__input" onChange={formik_parents.handleChange} name="isParentTwoAbsent" type="checkbox" checked={formik_parents.values.isParentTwoAbsent ? true : false}/>
+              <span className="form__label">Отсутствует</span>
+            </label>
+            <label className="form__field">
+              <span className="form__label">Имя второго представителя:</span>
+              <input className="form__input" value={formik_parents.values.parentTwoFirstName} onChange={formik_parents.handleChange} name="parentTwoFirstName" type="text"/>
+              {formik_parents.errors.parentTwoFirstName && <span className="form__error">{formik_parents.errors.parentTwoFirstName}</span> }
+            </label>
+            <label className="form__field">
+              <span className="form__label">Отчество второго представителя:</span>
+              <input className="form__input" value={formik_parents.values.parentTwoSecondName} onChange={formik_parents.handleChange} name="parentTwoSecondName" type="text"/>
+              {formik_parents.errors.parentTwoSecondName && <span className="form__error">{formik_parents.errors.parentTwoSecondName}</span> }
+            </label>
+            <label className="form__field">
+              <span className="form__label">Фамилия второго представителя:</span>
+              <input className="form__input" value={formik_parents.values.parentTwoLastName} onChange={formik_parents.handleChange} name="parentTwoLastName" type="text"/>
+              {formik_parents.errors.parentTwoLastName && <span className="form__error">{formik_parents.errors.parentTwoLastName}</span> }
+            </label>
+            <label className="form__field">
+              <span className="form__label">Телефон второго представителя:</span>
+              <InputMask
+                mask="+7(999)999-99-99"
+                maskPlaceholder="_"
+                value={formik_parents.values.parentTwoPhone} 
+                alwaysShowMask={false}
+                onChange={formik_parents.handleChange}
+              >
+                {() => <input className="form__input" name="parentTwoPhone" placeholder="+7(111)111-11-11" type="text"/>}
+              </InputMask>
+              {formik_parents.errors.parentTwoPhone && <span className="form__error">{formik_parents.errors.parentTwoPhone}</span> }
+            </label>
+            <label className="form__field">
+              <span className="form__label">Email второго представителя:</span>
+              <input className="form__input" value={formik_parents.values.parentTwoEmail} onChange={formik_parents.handleChange} name="parentTwoEmail" type="text"/>
+              {formik_parents.errors.parentTwoEmail && <span className="form__error">{formik_parents.errors.parentTwoEmail}</span> }
+            </label>
+            <label className="form__field-check">
+              <input className="form__input" onChange={formik_parents.getFieldProps("parentTwoRole").onChange} value="родитель" name="parentTwoRole" type="radio" checked={formik_parents.values.parentTwoRole === "родитель" ? true : false}/>
+              <span className="form__label">Родитель</span>
+            </label>
+            <label className="form__field-check">
+              <input className="form__input" onChange={formik_parents.getFieldProps("parentTwoRole").onChange}  name="parentTwoRole" value="опекун" type="radio" checked={formik_parents.values.parentTwoRole === "опекун" ? true : false} />
+              <span className="form__label">Опекун</span>
+            </label>
+          </div>
         </div>
         <button className="form__submit" type="submit">Подтвердить</button>
       </form>
@@ -432,16 +477,9 @@ const AddStudentForm = ({showModal, closeStudentForm, groupsList}) => {
   }
 
   return (
-    <div className="add-student-form">
-      <div className="add-student-form__close" onClick={() => {
-        formik_student.resetForm();
-        formik_parents.resetForm();
-        closeStudentForm();
-      }}>Close</div>
-      <div className="add-student-form__content">
-        {renderedComponent}
-      </div>
-    </div>
+    <>
+      {renderedComponent}
+    </>
   );
 
 }

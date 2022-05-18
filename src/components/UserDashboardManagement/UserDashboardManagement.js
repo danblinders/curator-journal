@@ -3,17 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import DatePicker, {DateObject} from 'react-multi-date-picker';
 import authContext from '../../context';
 import axios from 'axios';
+import { CSSTransition } from 'react-transition-group';
+import Loader from '../Loader/Loader';
 
 const UserDashboardManagement = () => {
   const loggedUser = useContext(authContext);
   const [studentStats, setStudentStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios.get('http://localhost:3001/curator-students-management', { params: { id: loggedUser.curator_id } } )
     .then(response => {
+      setLoading(false);
       setStudentStats(response.data);
     });
-  }, []);
+  }, [loggedUser.curator_id]);
+
+  if (loading) {
+    return <Loader/>
+  }
 
   const groupedStudentsItems = studentStats?.groups?.map(group => {
     const studentItems = studentStats?.students?.filter(item => item.group_id === group.group_id).map(student => {
@@ -81,22 +89,30 @@ const StudentManagementItem = ({studentInfo, studentMarksAverage, studentPassed,
   }
 
   return (
-    <tr key={`management-list-item-${studentInfo.student_id}`} className="table-row">
-      <td className="table-cell">{studentInfo.first_name} {studentInfo.second_name}</td>
-      <td className="table-cell">{studentMarksAverage}</td>
-      <td className="table-cell">{studentPassed}</td>
-      <td className="table-cell">{studentMissed}</td>
-      <td className="table-cell"><button className="details-button" onClick={() => setShowDatePicker(true)} >Подробнее</button></td>
-      {showDatePicker && (
-        <div className="date-picker-block">
-          <h2 className="date-picker-block__title">Введите даты для отчета</h2>
-          <div className="date-picker-block__content">
-            {dateErr && <span className="form__error">Введите обе даты</span> }
-            <DatePicker range value={dateValues} onChange={setDateValues} weekDays={weekDays} months={months} />
-            <button className="btn" onClick={createReport}>Создать отчет</button>
+    <tr key={`management-list-item-${studentInfo.student_id}`} className="table__row">
+      <td className="table__cell">{studentInfo.first_name} {studentInfo.second_name}</td>
+      <td className="table__cell">{studentMarksAverage}</td>
+      <td className="table__cell">{studentPassed}</td>
+      <td className="table__cell">{studentMissed}</td>
+      <td className="table__cell"><button className="details-btn" onClick={() => setShowDatePicker(true)} >Подробнее</button></td>
+      <CSSTransition
+        in={showDatePicker}
+        timeout={500}
+        classNames="modal"
+        unmountOnExit
+      >
+        <div className="modal">
+          <div className="modal__wrapper">
+            <button className="modal-close" onClick={() => setShowDatePicker(false)} ><i className="fa fa-close"></i></button>
+            <h2 className="datepicker__title">Введите даты для отчета</h2>
+            <div className="datepicker__content">
+              {dateErr && <span className="form__error">Введите обе даты</span> }
+              <DatePicker calendarPosition="bottom-left" fixMainPosition={true} range value={dateValues} onChange={setDateValues} weekDays={weekDays} months={months} />
+              <button className="add-btn" onClick={createReport}>Создать отчет</button>
+            </div>
           </div>
         </div>
-      )}
+      </CSSTransition>
     </tr>
   );
 }

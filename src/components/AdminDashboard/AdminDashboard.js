@@ -1,43 +1,48 @@
-import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import axios from 'axios';
+import { useContext } from 'react';
+import authContext from '../../context';
+import './AdminDashBoard.scss';
 
-const AdminDashboard = () => {
-  const [group, setGroup] = useState('');
-  const [curator, setCurator] = useState('');
-
-  const addGroup = () => {
-    axios.post('http://localhost:3001/groups', {group, curator}).then(response => {
-      console.log('success');
-    });
+const AdminDashboard = ({logoutUser}) => {
+  const loggedUser = useContext(authContext);
+  const signOut = () => {
+    sessionStorage.removeItem('user');
+    logoutUser(null);
   }
-
   return (
     <>
-      <div className="container">
-        <nav className="navbar">
-          <div className="navbar__item">
-            <NavLink activeclassname="navbar__link_active" to="/admin">
-              Главная
-            </NavLink>
+      <header className="header">
+        <div className="container">
+          <div className="header__wrapper">
+            <div className="header__user">
+              <h1 className="header__user-name">{loggedUser.first_name} {loggedUser.last_name}</h1>
+            </div>
+            <nav className="navbar">
+              <div className="navbar__item">
+                <NavLink end className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="/admin">
+                  Главная
+                </NavLink>
+              </div>
+              <div className="navbar__item">
+                <NavLink className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="curators">
+                  Кураторы
+                </NavLink>
+              </div>
+              <div className="navbar__item">
+                <NavLink className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="students">
+                  Студенты
+                </NavLink>
+              </div>
+              <div className="navbar__item">
+                <NavLink className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="events">
+                  События
+                </NavLink>
+              </div>
+            </nav>
+            <button className="header__logout" onClick={signOut}>Выйти</button>
           </div>
-          <div className="navbar__item">
-            <NavLink activeclassname="navbar__link_active" to="curators">
-              Кураторы
-            </NavLink>
-          </div>
-          <div className="navbar__item">
-            <NavLink activeclassname="navbar__link_active" to="students">
-              Студенты
-            </NavLink>
-          </div>
-          <div className="navbar__item">
-            <NavLink activeclassname="navbar__link_active" to="events">
-              События
-            </NavLink>
-          </div>
-        </nav>
-      </div>
+        </div>
+      </header>
       <div className="page__content">
         <div className="container">
           <div className="page__content-wrapper">
@@ -45,17 +50,6 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
-      {/* <div>
-        <label className="add-group__field">
-          Введите название группы
-          <input type="text" value={group} onChange={(e) => setGroup(e.target.value)} />
-        </label>
-        <label className="add-group__field">
-          Введите id куратора
-          <input type="text" value={curator} onChange={(e) => setCurator(e.target.value)} />
-        </label>
-        <button type="submit" onClick={addGroup}>Отправить</button>
-      </div> */}
     </>
   )
 }

@@ -2,18 +2,28 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import axios from 'axios';
+import Loader from '../Loader/Loader';
 
 const UserDashboardEvents = () => {
   const [events, setEvents] = useState(null);
-
-
+  const [loading, setLoading] = useState(true);
   const eventsString = JSON.stringify(events);
 
   useEffect(() => {
     axios.get("http://localhost:3001/all-events").then(response => {
-      setEvents(response.data);
+      if(response.data.type === "success") {
+        setEvents(response.data.result);
+        setLoading(false);
+      } else {
+        setEvents(null);
+        setLoading(false)
+      }
     });
   }, [eventsString]);
+
+  if(loading) {
+    return <Loader/>
+  }
 
   return (
     <>
@@ -32,12 +42,12 @@ const UserAttendanceList = ({eventsToShow}) => {
     const formattedEndDate = moment.utc(start_date).format('DD/MM/YYYY');
 
     return (
-      <tr className="event-row" key={`event-${event_id}`}>
-        <td className="event-cell" data-event-name={event_name}>{event_name}</td>
-        <td className="event-cell" data-event-start={start_date}>{formattedStartDate}</td>
-        <td className="event-cell" data-event-end={end_date}>{formattedEndDate}</td>
-        <td className="event-cell" data-event-end={end_date}>
-          <button onClick={() => navigate(`${event_id}`)}>Подробнее</button>
+      <tr className="table__row" key={`event-${event_id}`}>
+        <td className="table__cell" data-event-name={event_name}>{event_name}</td>
+        <td className="table__cell" data-event-start={start_date}>{formattedStartDate}</td>
+        <td className="table__cell" data-event-end={end_date}>{formattedEndDate}</td>
+        <td className="table__cell" data-event-end={end_date}>
+          <button onClick={() => navigate(`${event_id}`)} className="details-btn" >Подробнее</button>
         </td>
       </tr>
     )
