@@ -47,11 +47,12 @@ const UserDashboardIndex = () => {
             {userInfo.students?.length} студентов
           </div>
           <div className="info-block__item info-block__item_big">
-            {userInfo.stats?.reduce((sum, item) => sum + item, 0) / userInfo.stats.length} Средний балл за последние 7 дней
+            Средний балл за последние 7 дней: {userInfo.stats?.length > 0 ? userInfo.stats.reduce((sum, item) => sum + item, 0) / userInfo.stats.length : '-'}
           </div>
         </div>
         : <div className="test">Данные отсутствуют</div>
       }
+      <h2 className="title">Ближайшие события</h2>
       {
         latetsEvents ?
         <div className="latest-events">
@@ -79,12 +80,14 @@ const UserDashboardIndex = () => {
                 const thumbSrc = `data:image/${thumbExt};base64,${latEvent.thumbnail}`
 
                 return (
-                  <div key={`latest-event-${latEvent.event_id}`} className="latest-events__item">
+                  <div key={`latest-event-${latEvent.event_id}`} className="latest-events__item" onClick={() => navigate(`events/${latEvent.event_id}`) }>
                     <div className="latest-events__thumb">
                       <img src={thumbSrc} alt={latEvent.event_name} />
                     </div>
-                    <h3 className="latest-events__title">{latEvent.event_name}</h3>
-                    <button className="details-btn" onClick={() => navigate(`events/${latEvent.event_id}`) }>Подробнее</button>
+                    <div className="latest-events__info">
+                      <h3 className="latest-events__title">{latEvent.event_name}</h3>
+                      <button className="details-btn" onClick={() => navigate(`events/${latEvent.event_id}`) }>Подробнее</button>
+                    </div>
                   </div>
                 )
           })}

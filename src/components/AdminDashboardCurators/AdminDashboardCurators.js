@@ -10,21 +10,24 @@ import { CSSTransition } from 'react-transition-group';
 const AdminDashboardCurators = () => {
 
   const [curators, setCurators] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCuratorForm, setShowCuratorForm] = useState(false);
 
   const curatorsString = JSON.stringify(curators);
+  const groupsString = JSON.stringify(curators);
 
   const getCurators = () => {
-    axios.get('http://localhost:3001/all-curators').then(response => {
-      setCurators(response.data);
+    Promise.all([axios.get('http://localhost:3001/all-curators'), axios.get('http://localhost:3001/all-groups')]).then(responses => {
+      setCurators(responses[0].data);
+      setGroups(responses[1].data);
       setLoading(false);
     })
   }
 
   useEffect(() => {
     getCurators();
-  }, [curatorsString]);
+  }, [curatorsString, groupsString]);
 
   const deleteCurator= (id) => {
     axios.post(
@@ -44,7 +47,7 @@ const AdminDashboardCurators = () => {
   return (
     <>
       <div className="curators-list">
-        <CuratorsList curatorsToShow={curators} deleteRow={deleteCurator}/>
+        <CuratorsList curatorsToShow={curators} groupsList={groups} deleteRow={deleteCurator} updateCurators={getCurators} startLoading={() => setLoading(true)} />
       </div>
       <button className="add-btn" onClick={() => setShowCuratorForm(true)}>Добавить куратора</button>
       <CSSTransition
@@ -54,7 +57,7 @@ const AdminDashboardCurators = () => {
         unmountOnExit
       >
         <div className="modal">
-          <div className="modal__wrapper">
+          <div className="modal__wrapper modal__wrapper_medium">
             <AddCuratorForm changeLoading={setLoading} closeForm={() => setShowCuratorForm(false)} updateCurators={getCurators}/>
           </div>
         </div>
@@ -109,6 +112,7 @@ const AddCuratorForm = ({changeLoading, closeForm, updateCurators}) => {
   return (
       <form action="#" method="POST" className="add-curator__form form" onSubmit={formik_curator.handleSubmit}>
         <div className="modal-close" onClick={() => closeForm()}><i className="fa fa-close"></i></div>
+        <h2 className="form__title title">Новый куратор</h2>
         <label className="form__field">
           <span className="form__label">Имя:</span> 
           <input className="form__input" type="text" name="firstName" value={formik_curator.values.firstName} onChange={formik_curator.handleChange} />

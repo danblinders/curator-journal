@@ -11,7 +11,6 @@ const AdminDashboardIndex = () => {
 
   useEffect(() => {
     axios.get('http://localhost:3001/all').then(response => {
-      console.log(response)
       if(response.data.type === 'success') {
         setAdminInfo(response.data.result);
         setLoading(false);

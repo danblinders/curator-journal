@@ -9,4 +9,10 @@
   align-items: center;
   background-color: #fff;
   z-index: 10000;
+
+  img {
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
 }

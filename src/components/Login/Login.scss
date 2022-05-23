@@ -24,3 +24,10 @@
     color: #fff;
   }
 }
+
+@media (max-width: 575px) {
+  .login {
+    padding: 10px;
+    justify-content: center;
+  }
+}

@@ -11,6 +11,7 @@ import AdminDashboardIndex from '../AdminDashboardIndex/AdminDashboardIndex';
 import AdminDashboardEvents from '../AdminDashboardEvents/AdminDashboardEvents';
 import AdminDashboardStudents from '../AdminDashboardStudents/AdminDashboardStudents';
 import AdminDashboardCurators from '../AdminDashboardCurators/AdminDashboardCurators';
+import AdminDashboardGroups from '../AdminDashboardGroups/AdminDashboardGroups';
 import UserDashboard from '../UserDashboard/UserDashboard';
 import UserDashboardIndex from '../UserDashboardIndex/UserDashboardIndex';
 import UserDashboardEvents from '../UserDashboardEvents/UserDashboardEvents';
@@ -29,6 +30,7 @@ function App() {
             <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}>
               <Route path="admin" element={<AdminDashboard logoutUser={setUser} />}>
                 <Route index element={<AdminDashboardIndex/>}/>
+                <Route path="groups" element={<AdminDashboardGroups/>}/>
                 <Route path="students" element={<AdminDashboardStudents/>}/>
                 <Route path="curators" element={<AdminDashboardCurators/>}/>
                 <Route path="events" element={<AdminDashboardEvents/>}/>

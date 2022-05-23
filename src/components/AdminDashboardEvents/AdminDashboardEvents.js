@@ -58,7 +58,7 @@ const AdminDashboardEvents = () => {
         unmountOnExit
       >
         <div className="modal">
-          <div className="modal__wrapper">
+          <div className="modal__wrapper modal__wrapper_medium">
           <AddEventForm changeLoading={setLoading} closeForm={() => setShowEventForm(false)} updateEvents={getEvents}/>
           </div>
         </div>
@@ -110,6 +110,7 @@ const AddEventForm = ({changeLoading, closeForm, updateEvents}) => {
   return (
     <form action="#" method="POST" className="add-event__form form" onSubmit={formik_event.handleSubmit}>
       <div className="modal-close" onClick={() => closeForm()}><i className="fa fa-close"></i></div>
+      <h2 className="form__title title">Новое событие</h2>
       <label className="form__field">
         <span className="form__label">Название:</span> 
         <input className="form__input" type="text" name="eventName" value={formik_event.values.eventName} onChange={formik_event.handleChange} />
