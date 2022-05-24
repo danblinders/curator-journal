@@ -45,10 +45,10 @@ const AdminDashboardGroups = () => {
 
   return (
     <>
+      <button className="add-btn" onClick={() => setShowGroupForm(true)}>Добавить куратора</button>
       <div className="group-list-wrapper">
         <GroupList groupsToShow={groups} students={students} deleteRow={deleteGroup} />
       </div>
-      <button className="add-btn" onClick={() => setShowGroupForm(true)}>Добавить куратора</button>
       <CSSTransition
         in={showGroupForm}
         timeout={500}

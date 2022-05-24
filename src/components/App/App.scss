@@ -208,6 +208,7 @@ h1, h2, h3, h4 {
 }
 
 .form {
+  position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -380,7 +381,7 @@ h1, h2, h3, h4 {
 }
 
 .list {
-  padding: 1.5rem 0 3rem;
+  padding: 2rem 0 3rem;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -523,6 +524,45 @@ h1, h2, h3, h4 {
   background-color: #a8bbbf;
 }
 
+.modal{
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color:rgba(0, 0, 0, 0.8);
+  z-index: 10000;
+}
+
+.modal__wrapper {
+  position: fixed;
+  width: 90%;
+  max-height: 90%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 60px 45px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  border-radius: 5px;
+  transition: 0.3s all;
+
+  &_small {
+    max-width: 500px;
+  }
+
+  &_medium {
+    max-width: 900px;
+  }
+
+  &_large {
+    max-width: 1200px;
+  }
+}
+
 @media (min-width: 992px) {
   .mobile-navbar, .mobile-navbar-toggle {
     display: none;
@@ -530,6 +570,9 @@ h1, h2, h3, h4 {
 }
 
 @media (max-width: 991px) {
+  html {
+    font-size:60%;
+  }
   .header {
     .navbar {
       display: none;
@@ -537,5 +580,86 @@ h1, h2, h3, h4 {
   }
   .header__wrapper {
     justify-content: flex-start;
+  }
+
+  .navbar__link {
+    width: 100%;
+    display: flex;
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  html {
+    font-size:58%;
+  }
+
+  .push-left {
+    margin-left: 0;
+  }
+
+  .list__item {
+    &-wrapper {
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+  }
+
+  .list__item>.list__item-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+
+    &>button.push-left {
+      margin-left: 0;
+    }
+  }
+
+  .list__fields {
+    margin-left: 0.5rem;
+  }
+
+  .list__field {
+    &_image {
+      width: 100%;
+    }
+  }
+
+  .modal__wrapper {
+    padding: 20px 15px;
+  }
+
+  .form__group {
+    flex-direction: column;
+
+    &>div {
+      width: 100%;
+    }
+  }
+
+  .form__show-box {
+    font-size: 2.5rem;
+  }
+
+  .form__input_filter {
+    width: 100%;
+  }
+
+  .list__sublist {
+    margin-top: 1.5rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .list>.list__item>.react-slidedown>.list__sublist>.list__sublist-item .list__sublist-item {
+    border-bottom: 0;
+    border-top: 1px solid rgb(1, 70, 190);
+  }
+}
+
+@media (max-width: 424px) {
+  html {
+    font-size:55%;
   }
 }

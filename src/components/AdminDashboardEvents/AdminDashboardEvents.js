@@ -47,10 +47,10 @@ const AdminDashboardEvents = () => {
 
   return (
     <>
+      <button className="add-btn" onClick={() => setShowEventForm(true)} >Добавить событие</button>
       <div className="events-list-wrapper">
         <EventsList eventsToShow={events} deleteRow={deleteEvent}/>
       </div>
-      <button className="add-btn" onClick={() => setShowEventForm(true)} >Добавить событие</button>
       <CSSTransition
         in={showEventForm}
         timeout={500}

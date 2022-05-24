@@ -54,27 +54,27 @@ const AdminDashboard = ({logoutUser}) => {
         <div className="mobile-navbar__close" onClick={() => mobileNavRef.current.classList.remove('opened')}><i className="fa fa-close"></i></div>
         <div className="mobile-navbar__wrapper">
           <div className="navbar__item">
-            <NavLink end className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="/admin">
+            <NavLink onClick={() => mobileNavRef.current.classList.remove('opened')} end className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="/admin">
               Главная
             </NavLink>
           </div>
           <div className="navbar__item">
-            <NavLink className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="curators">
+            <NavLink onClick={() => mobileNavRef.current.classList.remove('opened')} className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="curators">
               Кураторы
             </NavLink>
           </div>
           <div className="navbar__item">
-            <NavLink className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="groups">
+            <NavLink onClick={() => mobileNavRef.current.classList.remove('opened')} className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="groups">
               Группы
             </NavLink>
           </div>
           <div className="navbar__item">
-            <NavLink className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="students">
+            <NavLink onClick={() => mobileNavRef.current.classList.remove('opened')} className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="students">
               Студенты
             </NavLink>
           </div>
           <div className="navbar__item">
-            <NavLink className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="events">
+            <NavLink onClick={() => mobileNavRef.current.classList.remove('opened')} className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="events">
               События
             </NavLink>
           </div>

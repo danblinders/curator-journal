@@ -46,10 +46,10 @@ const AdminDashboardCurators = () => {
 
   return (
     <>
+      <button className="add-btn" onClick={() => setShowCuratorForm(true)}>Добавить куратора</button>
       <div className="curators-list">
         <CuratorsList curatorsToShow={curators} groupsList={groups} deleteRow={deleteCurator} updateCurators={getCurators} startLoading={() => setLoading(true)} />
       </div>
-      <button className="add-btn" onClick={() => setShowCuratorForm(true)}>Добавить куратора</button>
       <CSSTransition
         in={showCuratorForm}
         timeout={500}

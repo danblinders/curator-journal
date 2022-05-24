@@ -15,7 +15,6 @@ const AdminDashboardStudents = () => {
   const [parents, setParents] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const closeForm = () => setShowForm(false);
-  const [modal, setModal] = useState({showState: false, message: ''});
   const studentsString = useMemo(() => JSON.stringify(students), [students]);
   const groupsString = useMemo(() => JSON.stringify(groups), [groups]);
 
@@ -53,10 +52,10 @@ const AdminDashboardStudents = () => {
 
   return (
     <>
+      <button className="add-btn" onClick={() => setShowForm(true)}>Добавить студента</button>
       <div className="students-list-wrapper">
         <StudentsList changeLoading={setLoading} updateParents={getStudents} studentsToShow={students} parents={parents} deleteRow={deleteStudent} />
       </div>
-      <button className="add-btn" onClick={() => setShowForm(true)}>Добавить студента</button>
       <CSSTransition
       in={showForm}
       timeout={500}
@@ -65,7 +64,7 @@ const AdminDashboardStudents = () => {
       >
         <div className="modal">
           <div className="modal__wrapper modal__wrapper_large">
-            <AddStudentForm changeLoading={setLoading} showModal={setModal} closeStudentForm={closeForm} groupsList={groups} updateStudents={getStudents} />
+            <AddStudentForm changeLoading={setLoading} closeStudentForm={closeForm} groupsList={groups} updateStudents={getStudents} />
           </div>
         </div>
       </CSSTransition>

@@ -50,22 +50,22 @@ const UserDashboard = ({logoutUser}) => {
         <div className="mobile-navbar__close" onClick={() => mobileNavRef.current.classList.remove('opened')}><i className="fa fa-close"></i></div>
         <div className="mobile-navbar__wrapper">
           <div className="navbar__item">
-            <NavLink end className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to={`/user/${loggedUser.curator_id}`}>
+            <NavLink onClick={() => mobileNavRef.current.classList.remove('opened')} end className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to={`/user/${loggedUser.curator_id}`}>
               Главная
             </NavLink>
           </div>
           <div className="navbar__item">
-            <NavLink className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="students">
+            <NavLink onClick={() => mobileNavRef.current.classList.remove('opened')} className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="students">
               Студенты
             </NavLink>
           </div>
           <div className="navbar__item">
-            <NavLink className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="management">
+            <NavLink onClick={() => mobileNavRef.current.classList.remove('opened')} className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="management">
               Успеваемость и посещаемость
             </NavLink>
           </div>
           <div className="navbar__item">
-            <NavLink className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="events">
+            <NavLink onClick={() => mobileNavRef.current.classList.remove('opened')} className={(navData) => navData.isActive ? "navbar__link navbar__link_active" : "navbar__link" } to="events">
               События
             </NavLink>
           </div>

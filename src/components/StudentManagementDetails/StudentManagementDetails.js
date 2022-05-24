@@ -9,8 +9,6 @@ const StudentManagementDetails = () => {
   const end_date = searchParams.get('end_date');
 
   const [studentData, setStudentData] = useState(null);
-
-  console.log(studentData);
   
   useEffect(() => {
     axios.get('http://localhost:3001/student-stat', {params:{student_id: id, start_date, end_date}}).then(
@@ -26,33 +24,62 @@ const StudentManagementDetails = () => {
     });
   });
 
-  console.log(studentSubjectsInfo);
+  const studentSubjectsMarks = studentSubjectsInfo?.map(item => item && item.length > 0 ? item.map(i => +i.mark) : null);
+  const studentSubjectsAverageScore = studentSubjectsMarks && studentSubjectsMarks.length > 0 ? studentSubjectsMarks.map(item => item && item.length > 0 ? item?.reduce((sum, score) => sum + score, 0) / item.length : null) : null;
+  const studentSubjectsTotalMissed = studentSubjectsInfo?.map(item => item && item.length > 0 ? item?.filter(stat => stat.attendance === 'н' || stat.attendance === 'б').length : null);
+  const studentSubjectsMissedByIllness = studentSubjectsInfo?.map(item => item && item.length > 0 ? item?.filter(stat => stat.attendance === 'б').length : null);
 
-  const studentSubjectsAverageScore = studentSubjectsInfo?.map(item => item.map(i => +i.mark)).map(item => item?.reduce((sum, score) => sum + score, 0) / item.length);
-  const studentSubjectsTotalMissed = studentSubjectsInfo?.map(item => item?.filter(stat => stat.attendance === 'н' || stat.attendance === 'б').length);
-  const studentSubjectsMissedByIllness = studentSubjectsInfo?.map(item => item?.filter(stat => stat.attendance === 'б').length);
+  console.log(studentSubjectsMissedByIllness);
 
   return (
     <div>
-      <h1>{studentData?.student_info.first_name} {studentData?.student_info.last_name}</h1>
-      <div className="studying">
-        <h2>Успеваемость</h2>
-        {studentData?.subjects?.map((element, id) => {
-          return `${element.subject_name}: ${studentSubjectsAverageScore[id]}`;
-        })}
-      </div>
-      <div className="attendance-total">
-        <h2>Пропущено всего</h2>
-        {studentData?.subjects?.map((element, id) => {
-          return `${element.subject_name}: ${studentSubjectsTotalMissed[id]}`;
-        })}
-      </div>
-      <div className="attendance-illness">
-        <h2>Пропущено по болезни</h2>
-        {studentData?.subjects?.map((element, id) => {
-          return `${element.subject_name}: ${studentSubjectsMissedByIllness[id]}`;
-        })}
-      </div>
+      <h1>{studentData?.student_info.first_name} {studentData?.student_info.second_name} {studentData?.student_info.last_name} <br/> Отчет за: {start_date} - {end_date}</h1>
+      <ul className="list">
+        <li className="list__item">
+          <h2>Успеваемость</h2>
+          <ul className="list__sublist">
+            {studentData?.subjects?.map((element, id) => {
+              return (
+                <li className="list__sublist-item">
+                  <div className="list__field list__item-wrapper">
+                    {id + 1}. {element.subject_name}: <span>{studentSubjectsAverageScore[id] !== null ? studentSubjectsAverageScore[id] : 'За этот период оценок нет'}</span>
+                  </div>
+                </li>
+                );
+            })}
+          </ul>
+        </li>
+        <li className="list__item">
+          <ul className="list__sublist">
+            <h2>Пропущено всего</h2>
+            
+            {studentData?.subjects?.map((element, id) => {
+              return (
+                <li className="list__sublist-item">
+                  <div className="list__field list__item-wrapper">
+                    {id + 1}. {element.subject_name}: <span>{studentSubjectsTotalMissed[id] !== null ? studentSubjectsTotalMissed[id] : 'Данных за этот период нет'}</span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </li>
+        <li className="list__item">
+          <ul className="list__sublist">
+            <h2>Пропущено по болезни</h2>
+            {studentData?.subjects?.map((element, id) => {
+              return (
+                <li className="list__sublist-item">
+                  <div className="list__field list__item-wrapper">
+                    {id + 1}. {element.subject_name}: <span>{studentSubjectsMissedByIllness[id] !== null ? studentSubjectsMissedByIllness[id] : 'Данных за этот период нет'}</span>
+                  </div>
+                </li>
+
+              );
+            })}
+          </ul>
+        </li>
+      </ul>
     </div>
   )
 }
