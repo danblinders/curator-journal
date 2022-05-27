@@ -19,9 +19,11 @@ const AdminDashboardCurators = () => {
 
   const getCurators = () => {
     Promise.all([axios.get('http://localhost:3001/all-curators'), axios.get('http://localhost:3001/all-groups')]).then(responses => {
-      setCurators(responses[0].data);
-      setGroups(responses[1].data);
-      setLoading(false);
+      if(responses[0].data.type === 'success' && responses[1].data.type === 'success') {
+        setCurators(responses[0].data.result);
+        setGroups(responses[1].data.result);
+        setLoading(false);
+      }
     })
   }
 

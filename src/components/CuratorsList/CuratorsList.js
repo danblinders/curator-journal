@@ -39,8 +39,10 @@ const CuratorsListItem = ({updateCurators, startLoading, groupsWithoutCurator, c
       axios.post(
         "http://localhost:3001/update", 
         {table_name: 'student_groups', table_col: 'curator_id', table_val: null, table_check_col: 'group_id', table_check_val: itemId}
-      ).then(() => {
-        updateCurators();
+      ).then((response) => {
+        if(response.data.type === 'success') {
+          updateCurators();
+        }
       });
     }
     return (

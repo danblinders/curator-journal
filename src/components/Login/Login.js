@@ -28,16 +28,18 @@ const Login = ({loginUser}) => {
 
   const sendLoginCredentials = () => {
     axios.post('http://localhost:3001/login', {login: formik_login.values.login, password: formik_login.values.password}).then(response => {
-      if(response.data[0]) {
-        sessionStorage.setItem('user', JSON.stringify(response.data[0]));
-        loginUser(response.data[0]);
-        if (response.data[0].curator_id === 1) {
-          navigate('/admin');
+      if(response.data.type === 'success') {
+        if(response.data.result[0]) {
+          sessionStorage.setItem('user', JSON.stringify(response.data.result[0]));
+          loginUser(response.data.result[0]);
+          if (response.data.result[0].curator_id === 1) {
+            navigate('/admin');
+          } else {
+            navigate(`/user/${response.data.result[0].curator_id}`);
+          }
         } else {
-          navigate(`/user/${response.data[0].curator_id}`);
+          setError('Введены неверные данные');
         }
-      } else {
-        setError('Введены неверные данные');
       }
     });
   }

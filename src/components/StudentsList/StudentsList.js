@@ -39,11 +39,15 @@ const StudentListItem = ({changeLoading, updateParents, student, studentParents,
 
   const studentParentsItems = studentParentsList ? (studentParentsList.length > 0 ? studentParentsList.map( (studentParent, parentId) => {
     const deleteParent = (id) => {
+      changeLoading(true);
       axios.post(
         "http://localhost:3001/delete", 
         {table_name: "parents", column_name: "parent_id", column_value: id}
-      ).then(() => {
-        setStudentParentsList((state) => state.filter(item => item.parent_id !== id));
+      ).then((response) => {
+        if(response.data.type === 'success') {
+          setStudentParentsList((state) => state.filter(item => item.parent_id !== id));
+          changeLoading(false);
+        }
       });
     }
     return (

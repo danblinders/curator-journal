@@ -13,7 +13,9 @@ const StudentManagementDetails = () => {
   useEffect(() => {
     axios.get('http://localhost:3001/student-stat', {params:{student_id: id, start_date, end_date}}).then(
       response => {
-        setStudentData(response.data);
+        if(response.data.type === 'success') {
+          setStudentData(response.data.result);
+        }
       }
     )
   }, [id, start_date, end_date]);

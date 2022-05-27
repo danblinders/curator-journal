@@ -23,8 +23,10 @@ const EventDetails = () => {
 
   const updateEventInfo = () => {
     axios.get("http://localhost:3001/curator-event", {params: {event_id: id, curator_id: loggedUser.curator_id}}).then(response => {
-      setEventInfo(response.data);
-      setLoading(false);
+      if(response.data.type === 'success') {
+        setEventInfo(response.data.result);
+        setLoading(false);
+      }
     });
   }
 

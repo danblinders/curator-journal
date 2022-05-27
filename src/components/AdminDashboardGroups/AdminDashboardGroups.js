@@ -18,9 +18,11 @@ const AdminDashboardGroups = () => {
   const getGroups = () => {
     Promise.all([axios.get("http://localhost:3001/all-students"), axios.get("http://localhost:3001/all-groups")]).then(
       responses => {
-        setStudents(responses[0].data);
-        setGroups(responses[1].data);
-        setLoading(false);
+        if(responses[0].data.type === 'success' && responses[1].data.type === 'success') {
+          setStudents(responses[0].data.result);
+          setGroups(responses[1].data.result);
+          setLoading(false);
+        }
       }
     )
   }
@@ -30,12 +32,14 @@ const AdminDashboardGroups = () => {
   }, [studentsString, groupsString]);
 
   const deleteGroup = (id) => {
+    setLoading(true);
     axios.post(
       "http://localhost:3001/delete", 
       {table_name: "student_groups", column_name: "group_id", column_value: id}
-    ).then(() => {
-      setLoading(true);
-      getGroups();
+    ).then((response) => {
+      if(response.data.type === 'success') {
+        getGroups();
+      }
     });
   }
 
@@ -45,7 +49,7 @@ const AdminDashboardGroups = () => {
 
   return (
     <>
-      <button className="add-btn" onClick={() => setShowGroupForm(true)}>Добавить куратора</button>
+      <button className="add-btn" onClick={() => setShowGroupForm(true)}>Добавить группу</button>
       <div className="group-list-wrapper">
         <GroupList groupsToShow={groups} students={students} deleteRow={deleteGroup} />
       </div>

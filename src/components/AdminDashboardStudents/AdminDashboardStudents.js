@@ -23,12 +23,12 @@ const AdminDashboardStudents = () => {
   const getStudents = () => {
     Promise.all([axios.get("http://localhost:3001/all-students"), axios.get("http://localhost:3001/all-groups"), axios.get("http://localhost:3001/all-parents")]).then(
       responses => {
-        setStudents(responses[0].data);
-        setGroups(responses[1].data);
-        if(responses[2].data.type === "success") {
+        if(responses[0].data.type === 'success' && responses[1].data.type === 'success' && responses[2].data.type === "success") {
+          setStudents(responses[0].data.result);
+          setGroups(responses[1].data.result);
           setParents(responses[2].data.result);
+          setLoading(false);
         }
-        setLoading(false);
       }
     )
   }
@@ -38,11 +38,15 @@ const AdminDashboardStudents = () => {
   }, [studentsString, groupsString]);
 
   const deleteStudent = (id) => {
+    setLoading(true);
     axios.post(
       "http://localhost:3001/delete", 
       {table_name: "students", column_name: "student_id", column_value: id}
-    ).then(() => {
-      setStudents(students.filter(({student_id}) => student_id !== id));
+    ).then((response) => { 
+      if(response.data.type === 'success') {
+        setStudents(students.filter(({student_id}) => student_id !== id));
+        setLoading(false);
+      }
     });
   }
 

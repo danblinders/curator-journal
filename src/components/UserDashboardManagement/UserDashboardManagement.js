@@ -16,8 +16,10 @@ const UserDashboardManagement = () => {
   useEffect(() => {
     axios.get('http://localhost:3001/curator-students-management', { params: { id: loggedUser.curator_id } } )
     .then(response => {
-      setStudentStats(response.data);
-      setLoading(false);
+      if(response.data.type === 'success') {
+        setStudentStats(response.data.result);
+        setLoading(false);
+      }
     });
   }, [loggedUser.curator_id]);
 
