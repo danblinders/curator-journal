@@ -14,7 +14,7 @@ const UserDashboardStudents = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([axios.get('http://localhost:3001/curator-students', { params: { id: loggedUser.curator_id } } ), axios.get("http://localhost:3001/all-parents")])
+    Promise.all([axios.get('https://curator-journal-backend.onrender.com/curator-students', { params: { id: loggedUser.curator_id } } ), axios.get("https://curator-journal-backend.onrender.com/all-parents")])
     .then(responses => {
       if(responses[0].data.type === "success" && responses[1].data.type === "success") {
         setStudents(responses[0].data.result);
@@ -86,7 +86,7 @@ const StudentItem =  ({studentInfo, parents, id}) => {
   const [updatableStudentInfo, setUpdatableStudentInfo] = useState({address, phone, email, additional_info});
 
   const updateValue = (table, col, val, check_col, check_val) => {
-    axios.post('http://localhost:3001/update ', {table_name: table, table_col: col, table_val: val, table_check_col: check_col, table_check_val: check_val}).then(response => {
+    axios.post('https://curator-journal-backend.onrender.com/update ', {table_name: table, table_col: col, table_val: val, table_check_col: check_col, table_check_val: check_val}).then(response => {
       if(response.data.type === 'success') {
         setStudentInfoMutable(state => {
           const newObj = {...state};

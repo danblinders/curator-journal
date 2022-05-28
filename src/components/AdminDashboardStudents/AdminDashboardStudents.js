@@ -21,7 +21,7 @@ const AdminDashboardStudents = () => {
   const [loading, setLoading] = useState(true);
 
   const getStudents = () => {
-    Promise.all([axios.get("http://localhost:3001/all-students"), axios.get("http://localhost:3001/all-groups"), axios.get("http://localhost:3001/all-parents")]).then(
+    Promise.all([axios.get("https://curator-journal-backend.onrender.com/all-students"), axios.get("https://curator-journal-backend.onrender.com/all-groups"), axios.get("https://curator-journal-backend.onrender.com/all-parents")]).then(
       responses => {
         if(responses[0].data.type === 'success' && responses[1].data.type === 'success' && responses[2].data.type === "success") {
           setStudents(responses[0].data.result);
@@ -40,7 +40,7 @@ const AdminDashboardStudents = () => {
   const deleteStudent = (id) => {
     setLoading(true);
     axios.post(
-      "http://localhost:3001/delete", 
+      "https://curator-journal-backend.onrender.com/delete", 
       {table_name: "students", column_name: "student_id", column_value: id}
     ).then((response) => { 
       if(response.data.type === 'success') {
@@ -250,7 +250,7 @@ const AddStudentForm = ({changeLoading, closeStudentForm, groupsList, updateStud
         role: formik_parents.values.parentTwoRole
       }
 
-      axios.post('http://localhost:3001/add-student', 
+      axios.post('https://curator-journal-backend.onrender.com/add-student', 
       {student: studentInfoFormData, student_parents: [parentOneFormData, parentTwoFormData]}
       ).then((response) => {
         if(response.data.type === 'success') {

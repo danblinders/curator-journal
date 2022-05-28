@@ -16,7 +16,7 @@ const AdminDashboardGroups = () => {
   const groupsString = useMemo(() => JSON.stringify(groups), [groups]);
 
   const getGroups = () => {
-    Promise.all([axios.get("http://localhost:3001/all-students"), axios.get("http://localhost:3001/all-groups")]).then(
+    Promise.all([axios.get("https://curator-journal-backend.onrender.com/all-students"), axios.get("https://curator-journal-backend.onrender.com/all-groups")]).then(
       responses => {
         if(responses[0].data.type === 'success' && responses[1].data.type === 'success') {
           setStudents(responses[0].data.result);
@@ -34,7 +34,7 @@ const AdminDashboardGroups = () => {
   const deleteGroup = (id) => {
     setLoading(true);
     axios.post(
-      "http://localhost:3001/delete", 
+      "https://curator-journal-backend.onrender.com/delete", 
       {table_name: "student_groups", column_name: "group_id", column_value: id}
     ).then((response) => {
       if(response.data.type === 'success') {
@@ -83,7 +83,7 @@ const AddGroupForm = ({changeLoading, closeForm, updateCurators}) => {
       validateOnBlur: false,
       onSubmit: () => {
         changeLoading(true);
-        axios.post('http://localhost:3001/add-group', 
+        axios.post('https://curator-journal-backend.onrender.com/add-group', 
         {group_name: formik_curator.values.groupName}
         ).then(response => {
           if(response.data.type === 'success') {

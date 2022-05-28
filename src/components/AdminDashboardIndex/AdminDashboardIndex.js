@@ -10,7 +10,7 @@ const AdminDashboardIndex = () => {
   const adminInfoString = useMemo(() => JSON.stringify(adminInfo), [adminInfo]);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/all').then(response => {
+    axios.get('https://curator-journal-backend.onrender.com/all').then(response => {
       if(response.data.type === 'success') {
         setAdminInfo(response.data.result);
         setLoading(false);

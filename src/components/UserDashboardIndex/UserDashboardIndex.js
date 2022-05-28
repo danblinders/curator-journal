@@ -15,7 +15,7 @@ const UserDashboardIndex = () => {
   const latestEventsString = useMemo(() => JSON.stringify(latetsEvents), [latetsEvents]);
 
   useEffect(() => {
-    Promise.all([axios.get('http://localhost:3001/all-curator-info', {params: {curator_id: user.curator_id}}), axios.get("http://localhost:3001/all-events")]).then(responses => {
+    Promise.all([axios.get('https://curator-journal-backend.onrender.com/all-curator-info', {params: {curator_id: user.curator_id}}), axios.get("https://curator-journal-backend.onrender.com/all-events")]).then(responses => {
       setLoading(false);
       if(responses[0].data.type === 'success') {
         setUserInfo(responses[0].data.result);

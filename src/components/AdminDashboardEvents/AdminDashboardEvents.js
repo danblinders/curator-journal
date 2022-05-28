@@ -17,7 +17,7 @@ const AdminDashboardEvents = () => {
   const eventsString = JSON.stringify(events);
 
   const getEvents = () => {
-    axios.get("http://localhost:3001/all-events").then(response => {
+    axios.get("https://curator-journal-backend.onrender.com/all-events").then(response => {
       if(response.data.type === "success") {
         setEvents(response.data.result);
         setLoading(false);  
@@ -34,7 +34,7 @@ const AdminDashboardEvents = () => {
 
   const deleteEvent = (id) => {
     axios.post(
-      "http://localhost:3001/delete", 
+      "https://curator-journal-backend.onrender.com/delete", 
       {table_name: "events", column_name: "event_id", column_value: id}
     ).then(() => {
       setEvents(events.filter(({event_id}) => event_id !== id));
@@ -99,7 +99,7 @@ const AddEventForm = ({changeLoading, closeForm, updateEvents}) => {
       formData.append("start_date", formik_event.values.eventStart.split('-').reverse().join('-'));
       formData.append("end_date", formik_event.values.eventEnd.split('-').reverse().join('-'));
   
-      axios.post('http://localhost:3001/add-event', formData)
+      axios.post('https://curator-journal-backend.onrender.com/add-event', formData)
       .then(() => {
         updateEvents();
         closeForm();
