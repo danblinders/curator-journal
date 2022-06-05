@@ -156,7 +156,7 @@ const AddGroupForm = ({changeLoading, groupsWithoutCurator, closeForm, updateCur
                     <div className="list__subtitle_secondary subtitle_secondary">Группы для выборки:</div>
                     <ul className="form__filter-list">
                       {groupsWithoutCurator.filter(group => group.group_name.includes(groupCuratorSearch.toUpperCase()))
-                      .map(item => <li key={`group-filter-${item.group_id}`} className="form__filter-item" data-group-filter-id={item.group_id} onClick={(e) => formik_group_curator.setFieldValue('group', e.target.getAttribute('data-group-filter-id'))}>{item.group_name}</li> )}
+                      .map(item => <li key={`group-filter-${item.group_id}`} className="form__filter-item" data-group-filter-id={item.group_id} onClick={(e) => formik_group_curator.setFieldValue('groupId', e.target.getAttribute('data-group-filter-id'))}>{item.group_name}</li> )}
                     </ul>
                   </div>
               }
