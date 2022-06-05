@@ -14,7 +14,7 @@ const UserDashboardManagement = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('https://curator-journal-backend.onrender.com/curator-students-management', { params: { id: loggedUser.curator_id } } )
+    axios.get('https://curator-backend.onrender.com/curator-students-management', { params: { id: loggedUser.curator_id } } )
     .then(response => {
       if(response.data.type === 'success') {
         setStudentStats(response.data.result);

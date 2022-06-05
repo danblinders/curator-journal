@@ -11,7 +11,7 @@ const StudentManagementDetails = () => {
   const [studentData, setStudentData] = useState(null);
   
   useEffect(() => {
-    axios.get('https://curator-journal-backend.onrender.com/student-stat', {params:{student_id: id, start_date, end_date}}).then(
+    axios.get('https://curator-backend.onrender.com/student-stat', {params:{student_id: id, start_date, end_date}}).then(
       response => {
         if(response.data.type === 'success') {
           setStudentData(response.data.result);

@@ -22,7 +22,7 @@ const EventDetails = () => {
   const eventsString = JSON.stringify(eventInfo);
 
   const updateEventInfo = () => {
-    axios.get("https://curator-journal-backend.onrender.com/curator-event", {params: {event_id: id, curator_id: loggedUser.curator_id}}).then(response => {
+    axios.get("https://curator-backend.onrender.com/curator-event", {params: {event_id: id, curator_id: loggedUser.curator_id}}).then(response => {
       if(response.data.type === 'success') {
         setEventInfo(response.data.result);
         setLoading(false);
@@ -152,7 +152,7 @@ const EventParticipantsItem = ({changeLoading, updateEventData, event_id, group,
       validateOnBlur: false,
       onSubmit: () => {
         changeLoading();
-        axios.post("https://curator-journal-backend.onrender.com/add-participant", {event_id, student_id: formik_participants.values.participantName, role: formik_participants.values.participantRole}).then(response => {
+        axios.post("https://curator-backend.onrender.com/add-participant", {event_id, student_id: formik_participants.values.participantName, role: formik_participants.values.participantRole}).then(response => {
           if(response.data.type === 'success') {
             setShowParticipantForm(false);
             updateEventData();

@@ -27,7 +27,7 @@ const Login = ({loginUser}) => {
   const navigate = useNavigate();
 
   const sendLoginCredentials = () => {
-    axios.post('https://curator-journal-backend.onrender.com/login', {login: formik_login.values.login, password: formik_login.values.password}).then(response => {
+    axios.post('https://curator-backend.onrender.com/login', {login: formik_login.values.login, password: formik_login.values.password}).then(response => {
       if(response.data.type === 'success') {
         if(response.data.result[0]) {
           sessionStorage.setItem('user', JSON.stringify(response.data.result[0]));

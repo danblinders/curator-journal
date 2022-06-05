@@ -37,7 +37,7 @@ const CuratorsListItem = ({updateCurators, startLoading, groupsWithoutCurator, c
     const deleteCuratorGroup = (itemId) => {
       startLoading();
       axios.post(
-        "https://curator-journal-backend.onrender.com/update", 
+        "https://curator-backend.onrender.com/update", 
         {table_name: 'student_groups', table_col: 'curator_id', table_val: null, table_check_col: 'group_id', table_check_val: itemId}
       ).then((response) => {
         if(response.data.type === 'success') {
@@ -118,7 +118,7 @@ const AddGroupForm = ({changeLoading, groupsWithoutCurator, closeForm, updateCur
       validateOnBlur: false,
       onSubmit: () => {
         changeLoading();
-        axios.post('https://curator-journal-backend.onrender.com/update-group', 
+        axios.post('https://curator-backend.onrender.com/update-group', 
         {group_id: +formik_group_curator.values.groupId, curator_id: curatorId}
         ).then(response => {
           if(response.data.type === 'success') {

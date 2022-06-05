@@ -41,7 +41,7 @@ const StudentListItem = ({changeLoading, updateParents, student, studentParents,
     const deleteParent = (id) => {
       changeLoading(true);
       axios.post(
-        "https://curator-journal-backend.onrender.com/delete", 
+        "https://curator-backend.onrender.com/delete", 
         {table_name: "parents", column_name: "parent_id", column_value: id}
       ).then((response) => {
         if(response.data.type === 'success') {
@@ -146,7 +146,7 @@ const AddParentForm = ({studentId, changeLoading, closeForm, updateParents}) => 
         student_id: studentId
       }
 
-      axios.post('https://curator-journal-backend.onrender.com/add-parent', 
+      axios.post('https://curator-backend.onrender.com/add-parent', 
       {parent: parentFormData}
       ).then((response) => {
         if(response.data.type === 'success') {

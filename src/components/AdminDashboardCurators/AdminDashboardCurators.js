@@ -18,7 +18,7 @@ const AdminDashboardCurators = () => {
   const groupsString = JSON.stringify(curators);
 
   const getCurators = () => {
-    Promise.all([axios.get('https://curator-journal-backend.onrender.com/all-curators'), axios.get('https://curator-journal-backend.onrender.com/all-groups')]).then(responses => {
+    Promise.all([axios.get('https://curator-backend.onrender.com/all-curators'), axios.get('https://curator-backend.onrender.com/all-groups')]).then(responses => {
       if(responses[0].data.type === 'success' && responses[1].data.type === 'success') {
         setCurators(responses[0].data.result);
         setGroups(responses[1].data.result);
@@ -33,7 +33,7 @@ const AdminDashboardCurators = () => {
 
   const deleteCurator= (id) => {
     axios.post(
-      "https://curator-journal-backend.onrender.com/delete", 
+      "https://curator-backend.onrender.com/delete", 
       {table_name: "curators", column_name: "curator_id", column_value: id}
     ).then(() => {
       setCurators(curators.filter(({curator_id}) => curator_id !== id));
@@ -101,7 +101,7 @@ const AddCuratorForm = ({changeLoading, closeForm, updateCurators}) => {
       validateOnBlur: false,
       onSubmit: () => {
         changeLoading(true);
-        axios.post('https://curator-journal-backend.onrender.com/add-curator', 
+        axios.post('https://curator-backend.onrender.com/add-curator', 
         {first_name: formik_curator.values.firstName, last_name: formik_curator.values.lastName, email: formik_curator.values.email, phone: formik_curator.values.phone, login: formik_curator.values.login, password: formik_curator.values.password}
         ).then(() => {
           formik_curator.resetForm();

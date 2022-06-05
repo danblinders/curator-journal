@@ -12,7 +12,7 @@ const UserDashboardEvents = () => {
   const eventsString = JSON.stringify(events);
 
   useEffect(() => {
-    axios.get("https://curator-journal-backend.onrender.com/all-events").then(response => {
+    axios.get("https://curator-backend.onrender.com/all-events").then(response => {
       if(response.data.type === "success") {
         setEvents(response.data.result);
         setLoading(false);
