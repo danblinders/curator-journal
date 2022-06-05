@@ -31,7 +31,7 @@ export default CuratorsList;
 const CuratorsListItem = ({updateCurators, startLoading, groupsWithoutCurator, curator, curatorGroups, id, deleteRow}) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showAddCuratorGroupForm, setShowAddCuratorGroupForm] = useState(false);
-  const {curator_id, first_name, last_name, email, phone, login, password} = curator;
+  const {curator_id, first_name, second_name, last_name, email, phone, login, password} = curator;
 
   const curatorGroupsItems = curatorGroups?.length > 0 ? curatorGroups.map((item, groupId) => {
     const deleteCuratorGroup = (itemId) => {
@@ -61,7 +61,7 @@ const CuratorsListItem = ({updateCurators, startLoading, groupsWithoutCurator, c
   return (
     <li className="list__item">
       <div className="list__item-wrapper">
-        <h3 className="list__subtitle subtitle">{id + 1}. {first_name} {last_name}</h3>
+        <h3 className="list__subtitle subtitle">{id + 1}. {first_name} {second_name} {last_name}</h3>
         <button className="details-btn push-left" onClick={() => setShowDropdown((state) => !state)}>{showDropdown ? 'Свернуть' : 'Подробнее'}</button>
         <button className="btn-delete" onClick={() => deleteRow(curator_id)}>Удалить</button>
       </div>
