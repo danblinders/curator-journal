@@ -8,12 +8,10 @@ import axios from 'axios';
 import { CSSTransition } from 'react-transition-group';
 
 const AdminDashboardCurators = () => {
-
   const [curators, setCurators] = useState([]);
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCuratorForm, setShowCuratorForm] = useState(false);
-
   const curatorsString = JSON.stringify(curators);
   const groupsString = JSON.stringify(curators);
 
@@ -73,6 +71,7 @@ const AddCuratorForm = ({changeLoading, closeForm, updateCurators}) => {
   const formik_curator = useFormik({
     initialValues: {
       firstName: '',
+      secondName: '',
       lastName: '',
       email: '',
       phone: '',
@@ -83,6 +82,7 @@ const AddCuratorForm = ({changeLoading, closeForm, updateCurators}) => {
     validationSchema:
       yup.object({
         firstName: yup.string().required("Обязательное поле").max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
+        secondName: yup.string().required("Обязательное поле").max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
         lastName: yup.string().required("Обязательное поле").max(40, 'Значение не должно превышать 40 символов').matches(/^[аА-яЯaA-zZ\s]+$/, "Поле должно содержать только буквенные символы"),
         email: yup.string().required("Обязательное поле").email("Введен неверный формат email"),
         phone: yup.string().required("Обязательное поле"),
@@ -102,7 +102,7 @@ const AddCuratorForm = ({changeLoading, closeForm, updateCurators}) => {
       onSubmit: () => {
         changeLoading(true);
         axios.post('https://curator-backend.onrender.com/add-curator', 
-        {first_name: formik_curator.values.firstName, last_name: formik_curator.values.lastName, email: formik_curator.values.email, phone: formik_curator.values.phone, login: formik_curator.values.login, password: formik_curator.values.password}
+        {first_name: formik_curator.values.firstName, second_name:formik_curator.values.secondName, last_name: formik_curator.values.lastName, email: formik_curator.values.email, phone: formik_curator.values.phone, login: formik_curator.values.login, password: formik_curator.values.password}
         ).then(() => {
           formik_curator.resetForm();
           updateCurators();
@@ -119,6 +119,11 @@ const AddCuratorForm = ({changeLoading, closeForm, updateCurators}) => {
           <span className="form__label">Имя:</span> 
           <input className="form__input" type="text" name="firstName" value={formik_curator.values.firstName} onChange={formik_curator.handleChange} />
           {formik_curator.errors.firstName && <span className="form__error">{formik_curator.errors.firstName}</span>}
+        </label>
+        <label className="form__field">
+          <span className="form__label">Отчество:</span> 
+          <input className="form__input" type="text" name="secondName" value={formik_curator.values.secondName} onChange={formik_curator.handleChange} />
+          {formik_curator.errors.secondName && <span className="form__error">{formik_curator.errors.secondName}</span>}
         </label>
         <label className="form__field">
           <span className="form__label">Фамилия:</span>

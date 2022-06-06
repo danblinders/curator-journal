@@ -8,6 +8,7 @@ import loginBg from '../../img/login-bg.jpg';
 
 const Login = ({loginUser}) => {
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const formik_login = useFormik({
     initialValues: {
       login: '',
@@ -27,6 +28,7 @@ const Login = ({loginUser}) => {
   const navigate = useNavigate();
 
   const sendLoginCredentials = () => {
+    setLoading(true);
     axios.post('https://curator-backend.onrender.com/login', {login: formik_login.values.login, password: formik_login.values.password}).then(response => {
       if(response.data.type === 'success') {
         if(response.data.result[0]) {
@@ -39,6 +41,7 @@ const Login = ({loginUser}) => {
           }
         } else {
           setError('Введены неверные данные');
+          setLoading(false);
         }
       }
     });
@@ -50,6 +53,7 @@ const Login = ({loginUser}) => {
         <h2 className="title login__title">Войти</h2>
         <form action="#" method="POST" className="login-form form" onSubmit={formik_login.handleSubmit}>
           {error ? <span className="form__error">{error}</span>: null}
+          {loading ? <span className="form__loading">Данные обрабатываются...</span>: null}
           <label className="form__field">
             <span className="form__label">Логин:</span> 
             <input className="form__input" type="text" name="login" value={formik_login.values.login} onChange={(e) => {

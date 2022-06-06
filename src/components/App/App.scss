@@ -302,6 +302,11 @@ h1, h2, h3, h4 {
     font-size: 2rem;
     color: rgb(223, 15, 0);
   }
+
+  &__loading {
+    font-size: 2rem;
+    color: #000;
+  }
   &__show-box {
     font-size: 3rem;
   }
