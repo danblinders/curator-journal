@@ -106,7 +106,7 @@ const StudentManagementItem = ({id, studentInfo, studentStat}) => {
   }
 
   const studentMarks = studentStat.map(stat => +stat.mark);
-  const studentMarksAverage = studentMarks.length > 0 ? studentMarks.reduce((sum, item) => sum + item, 0) / studentMarks.length : 'Оценок за последние 7 дней нет';
+  const studentMarksAverage = studentMarks.length > 0 ? (studentMarks.reduce((sum, item) => sum + item, 0) / studentMarks.length).toFixed(2) : 'Оценок за последние 7 дней нет';
   const studentPassed = studentStat.filter(data => data.attendance === 'п').length;
   const studentMissed = studentStat?.filter(data => data.attendance === 'н' || data.attendance === 'б').length;
 

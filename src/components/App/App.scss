@@ -615,6 +615,10 @@ h1, h2, h3, h4 {
       display: none;
     }
   }
+
+  .list__fields_cols {
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 767px) {

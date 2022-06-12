@@ -27,7 +27,7 @@ const StudentManagementDetails = () => {
   });
 
   const studentSubjectsMarks = studentSubjectsInfo?.map(item => item && item.length > 0 ? item.map(i => +i.mark) : null);
-  const studentSubjectsAverageScore = studentSubjectsMarks && studentSubjectsMarks.length > 0 ? studentSubjectsMarks.map(item => item && item.length > 0 ? item?.reduce((sum, score) => sum + score, 0) / item.length : null) : null;
+  const studentSubjectsAverageScore = studentSubjectsMarks && studentSubjectsMarks.length > 0 ? studentSubjectsMarks.map(item => item && item.length > 0 ? (item?.reduce((sum, score) => sum + score, 0) / item.length).toFixed(2) : null) : null;
   const studentSubjectsTotalMissed = studentSubjectsInfo?.map(item => item && item.length > 0 ? item?.filter(stat => stat.attendance === 'н' || stat.attendance === 'б').length : null);
   const studentSubjectsMissedByIllness = studentSubjectsInfo?.map(item => item && item.length > 0 ? item?.filter(stat => stat.attendance === 'б').length : null);
 
