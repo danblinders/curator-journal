@@ -35,9 +35,7 @@ const UserDashboardIndex = () => {
   if (loading) {
     return <Loader/>;
   }
-
-  console.log(userInfo.stats);
- 
+  
   return (
     <>
       {userInfo ? 
