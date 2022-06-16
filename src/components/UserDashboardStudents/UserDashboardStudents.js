@@ -16,6 +16,7 @@ const UserDashboardStudents = () => {
   useEffect(() => {
     Promise.all([axios.get('https://curator-backend.onrender.com/curator-students', { params: { id: loggedUser.curator_id } } ), axios.get("https://curator-backend.onrender.com/all-parents")])
     .then(responses => {
+      console.log(responses);
       if(responses[0].data.type === "success" && responses[1].data.type === "success") {
         setStudents(responses[0].data.result);
         setParents(responses[1].data.result);
