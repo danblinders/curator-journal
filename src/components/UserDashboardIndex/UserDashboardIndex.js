@@ -35,6 +35,8 @@ const UserDashboardIndex = () => {
   if (loading) {
     return <Loader/>;
   }
+
+  console.log(userInfo.stats);
  
   return (
     <>
@@ -47,7 +49,7 @@ const UserDashboardIndex = () => {
             {userInfo.students?.length} студентов
           </div>
           <div className="info-block__item info-block__item_big">
-            Средний балл за последние 7 дней: {userInfo.stats?.length > 0 ? (userInfo.stats.reduce((sum, item) => +sum + +item, 0) / userInfo.stats.length).toFixed(2) : '-'}
+            Средний балл за последние 7 дней: {userInfo.stats?.length > 0 ? ((userInfo.stats.reduce((sum, item) => +sum + +item, 0) / userInfo.stats.length).toFixed(2)) : '-'}
           </div>
         </div>
         : <div className="test">Данные отсутствуют</div>
