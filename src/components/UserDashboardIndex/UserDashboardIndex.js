@@ -43,13 +43,13 @@ const UserDashboardIndex = () => {
       {userInfo ? 
         <div className="info-block" >
           <div className="info-block__item info-block__item_medium">
-            {userInfo.groups?.length} групп
+            {userInfo?.groups?.length} групп
           </div>
           <div className="info-block__item info-block__item_medium">
-            {userInfo.students?.length} студентов
+            {userInfo?.students?.length} студентов
           </div>
           <div className="info-block__item info-block__item_big">
-            Средний балл за последние 7 дней: {userInfo.stats?.length > 0 ? ((userInfo.stats.reduce((sum, item) => +sum + +item.mark, 0) / userInfo.stats.length).toFixed(2)) : '-'}
+            Средний балл за последние 7 дней: {userInfo?.stats?.length > 0 ? ((userInfo.stats.reduce((sum, item) => +sum + +item.mark, 0) / userInfo.stats.length).toFixed(2)) : '-'}
           </div>
         </div>
         : <div className="test">Данные отсутствуют</div>
